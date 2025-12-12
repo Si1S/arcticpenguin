@@ -1,0 +1,8 @@
+URI ldaps://<hostname_du_DC>:636
+BASE dc=<domaine>,dc=<TLS>
+TLS_CACERT /usr/local/share/ca-certificate/<nom-certificat-ca>
+TLS_REQCERT demand
+
+
+TIMELIMIT 15
+caBIND_TIMELIMIT 5

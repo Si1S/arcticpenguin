@@ -1,1 +1,16 @@
+# Secretos
+.env
 *.env
+**/.env
+*.key
+*.pem
+
+# Datos de volúmenes
+**/data/
+**/uploads/
+**/backups/
+
+# Configs
+**/config/config.php
+**/hosts
+**/ldap.conf
