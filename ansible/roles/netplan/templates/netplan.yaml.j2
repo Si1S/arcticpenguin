@@ -1,0 +1,21 @@
+network:
+  version: 2
+  renderer: {{ netplan_renderer | default('networkd') }}
+  ethernets:
+    {{ netplan_interface }}:
+{% if netplan_dhcp | default(false) %}
+      dhcp4: true
+      dhcp6: false
+{% else %}
+      addresses:
+        - {{ netplan_ip }}/{{ netplan_netmask | default('24') }}
+      routes:
+        - to: default
+          via: {{ netplan_gateway }}
+      nameservers:
+        search: [{% for domain in netplan_search_domains | default(['arcticpenguin.local']) %}{{ domain }}{% if not loop.last %}, {% endif %}{% endfor %}]
+        addresses:
+{% for dns in netplan_dns %}
+          - {{ dns }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,34 @@
+netplan_ip: 10.0.20.4
+netplan_gateway: 10.0.20.1
+netplan_interface: eth0
+netplan_dns:
+  - 10.0.20.2
+  - 10.0.20.3
+  - 9.9.9.9
+
+extra_authorized_users:
+ - nextcloud
+ - node-exp
+ - wazuh
+
+ufw_rules:
+  - port: 22
+    from:
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+
+  - port: 9100          # node exporter
+    from:
+      - "10.0.20.6"     # mon01
+      - "10.0.30.2"     # bas01
+
+  - port: 9256          # process exporter
+    from:
+      - "10.0.20.6"     # mon01
+      - "10.0.30.2"     # bas01
+
+  - port: 443
+    from:
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+      - "10.0.10.0/24"  # users subnet

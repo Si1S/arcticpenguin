@@ -1,0 +1,6 @@
+---
+- name: Install and configure Cloudflare Tunnel
+  hosts: web01
+  become: yes
+  roles:
+    - cloudflare_tunnel

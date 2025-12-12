@@ -1,0 +1,5 @@
+---
+process_exporter_version: "0.8.7"
+process_exporter_download_url: "https://github.com/ncabatoff/process-exporter/releases/latest/download/process-exporter_{{ process_exporter_version }}_linux_amd64.deb"
+process_exporter_service_name: process-exporter
+process_exporter_port: 9256

@@ -1,0 +1,7 @@
+---
+node_exporter_version: "1.10.2"
+node_exporter_user: node-exp
+node_exporter_group: node-exp
+node_exporter_install_dir: /usr/local/bin
+node_exporter_service_name: node_exporter
+node_exporter_port: 9100

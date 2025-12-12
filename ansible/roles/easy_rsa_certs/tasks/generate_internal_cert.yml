@@ -1,0 +1,68 @@
+---
+- name: Generate OpenSSL config for {{ cert.name }}
+  template:
+    src: internal_cert_openssl.cnf.j2
+    dest: "{{ easyrsa_pki_dir }}/{{ cert.name }}_openssl.cnf"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0644'
+
+- name: Generate private key for {{ cert.name }}
+  command: >
+    openssl genrsa 
+    -out {{ easyrsa_pki_dir }}/private/{{ cert.name }}.key 
+    {{ easyrsa_key_size }}
+  args:
+    creates: "{{ easyrsa_pki_dir }}/private/{{ cert.name }}.key"
+  become_user: "{{ pki_admin_user }}"
+
+- name: Generate CSR for {{ cert.name }}
+  command: >
+    openssl req -new
+    -key {{ easyrsa_pki_dir }}/private/{{ cert.name }}.key
+    -out {{ easyrsa_pki_dir }}/reqs/{{ cert.name }}.csr
+    -config {{ easyrsa_pki_dir }}/{{ cert.name }}_openssl.cnf
+  args:
+    creates: "{{ easyrsa_pki_dir }}/reqs/{{ cert.name }}.csr"
+  become_user: "{{ pki_admin_user }}"
+
+- name: Import CSR for {{ cert.name }}
+  command: >
+    {{ easyrsa_install_dir }}/easyrsa import-req
+    {{ easyrsa_pki_dir }}/reqs/{{ cert.name }}.csr
+    {{ cert.name | replace('.', '_') }}
+  args:
+    creates: "{{ easyrsa_pki_dir }}/reqs/{{ cert.name | replace('.', '_') }}.req"
+  become_user: "{{ pki_admin_user }}"
+  environment:
+    EASYRSA_PKI: "{{ easyrsa_pki_dir }}"
+
+- name: Sign certificate for {{ cert.name }}
+  command: >
+    {{ easyrsa_install_dir }}/easyrsa 
+    --days={{ easyrsa_cert_expire }}
+    sign-req {{ cert.type }} {{ cert.name | replace('.', '_') }}
+  args:
+    creates: "{{ easyrsa_pki_dir }}/issued/{{ cert.name | replace('.', '_') }}.crt"
+  become_user: "{{ pki_admin_user }}"
+  environment:
+    EASYRSA_PKI: "{{ easyrsa_pki_dir }}"
+    EASYRSA_BATCH: "yes"
+
+- name: Copy certificate to issued-certs directory
+  copy:
+    src: "{{ easyrsa_pki_dir }}/issued/{{ cert.name | replace('.', '_') }}.crt"
+    dest: "{{ easyrsa_pki_dir }}/issued-certs/{{ cert.name }}.crt"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0644'
+    remote_src: yes
+
+- name: Copy private key to issued-certs directory
+  copy:
+    src: "{{ easyrsa_pki_dir }}/private/{{ cert.name }}.key"
+    dest: "{{ easyrsa_pki_dir }}/issued-certs/{{ cert.name }}.key"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0600'
+    remote_src: yes

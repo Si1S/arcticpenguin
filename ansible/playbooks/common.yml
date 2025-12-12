@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+
+  roles:
+    - role: host
+      tags: ['common', 'hostname']
+    - role: users
+      tags: ['common', 'users']
+    - role: ssh_hardening
+      tags: ['common', 'ssh']
+    - role: netplan
+      tags: ['common', 'network']
+    - role: node_exporter
+      tags: ['monitoring']
+    - role: ufw_firewall
+      tags: ['security', 'firewall']

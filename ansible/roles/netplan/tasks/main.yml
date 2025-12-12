@@ -1,0 +1,6 @@
+- name: Deploy netplan config
+  template:
+    src: netplan.yaml.j2
+    dest: /etc/netplan/01-config.yaml
+    mode: '0600'
+  notify: Apply netplan

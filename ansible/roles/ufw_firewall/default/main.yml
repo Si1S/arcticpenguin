@@ -1,0 +1,6 @@
+---
+ufw_rules:
+  - from: "10.0.20.1" # pfsense servers interface
+    port: 22
+ufw_rules_outgoing: []
+ufw_outgoing_policy: allow

@@ -1,0 +1,27 @@
+[ req ]
+default_bits        = {{ easyrsa_key_size }}
+distinguished_name  = req_distinguished_name
+req_extensions      = v3_req
+prompt              = no
+
+[ req_distinguished_name ]
+C  = {{ easyrsa_req_country }}
+ST = {{ easyrsa_req_province }}
+L  = {{ easyrsa_req_city }}
+O  = {{ easyrsa_req_org }}
+OU = Internal Services
+CN = {{ cert.name }}
+emailAddress = {{ easyrsa_req_email }}
+
+[ v3_req ]
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = {{ cert.name }}
+{% if cert.san is defined %}
+{% for san in cert.san %}
+DNS.{{ loop.index + 1 }} = {{ san }}
+{% endfor %}
+{% endif %}

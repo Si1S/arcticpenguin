@@ -1,0 +1,72 @@
+---
+- name: Add Cloudflare GPG key
+  apt_key:
+    url: https://pkg.cloudflare.com/cloudflare-main.gpg
+    state: present
+  become: true
+
+- name: Add Cloudflare repository
+  apt_repository:
+    repo: "deb https://pkg.cloudflare.com/cloudflared {{ ansible_distribution_release }} main"
+    state: present
+    filename: cloudflared
+  become: true
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Install cloudflared
+  apt:
+    name: cloudflared
+    state: present
+  become: true
+
+- name: Create cloudflared system user
+  user:
+    name: "{{ cloudflared_user }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    home: "{{ cloudflared_config_dir }}"
+    create_home: no
+  become: true
+
+- name: Create cloudflared config directory
+  file:
+    path: "{{ cloudflared_config_dir }}"
+    state: directory
+    owner: "{{ cloudflared_user }}"
+    group: "{{ cloudflared_group }}"
+    mode: '0750'
+  become: true
+
+- name: Deploy cloudflared config file
+  template:
+    src: config.yml.j2
+    dest: "{{ cloudflared_config_dir }}/config.yml"
+    owner: "{{ cloudflared_user }}"
+    group: "{{ cloudflared_group }}"
+    mode: '0640'
+  become: true
+  notify: restart cloudflared
+  no_log: false
+
+- name: Create cloudflared systemd service file
+  template:
+    src: cloudflared.service.j2
+    dest: /etc/systemd/system/cloudflared.service
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: restart cloudflared
+
+- name: Install cloudflared service
+  systemd:
+    name: cloudflared
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  become: true

@@ -1,0 +1,12 @@
+ssh_settings:
+  PasswordAuthentication: 'no'
+  PermitRootLogin: 'no'
+  PubkeyAuthentication: 'yes'
+  MaxAuthTries: '3'
+  ClientAliveInterval: '300'
+  ClientAliveCountMax: '2'
+  X11Forwarding: 'no'
+  AllowTcpForwarding: 'no'
+  Port: '22'
+  AllowGroups: 'sudo'
+

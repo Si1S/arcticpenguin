@@ -1,0 +1,25 @@
+---
+- name: Install dependencies for downloading
+  apt:
+    name: curl
+    state: present
+  become: true
+
+- name: Download process_exporter package
+  get_url:
+    url: "{{ process_exporter_download_url }}"
+    dest: "/tmp/process-exporter_{{ process_exporter_version }}_linux_amd64.deb"
+    mode: '0644'
+  become: true
+
+- name: Install process_exporter package
+  apt:
+    deb: "/tmp/process-exporter_{{ process_exporter_version }}_linux_amd64.deb"
+  become: true
+
+- name: Enable and start process_exporter service
+  systemd:
+    name: "{{ process_exporter_service_name }}"
+    enabled: yes
+    state: started
+  become: true

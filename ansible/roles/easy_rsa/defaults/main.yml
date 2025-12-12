@@ -1,0 +1,30 @@
+---
+easyrsa_version: "3.1.7"
+easyrsa_install_dir: /opt/easy-rsa
+easyrsa_pki_dir: /opt/easy-rsa/pki
+
+# CA Common Name
+easyrsa_ca_cn: "Internal Root CA"
+
+# CA information
+easyrsa_req_country: "US"
+easyrsa_req_province: "State"
+easyrsa_req_city: "City"
+easyrsa_req_org: "Organization"
+easyrsa_req_email: "admin@example.com"
+easyrsa_req_ou: "PKI Department"
+
+# Domains
+public_domain: "example.com"
+internal_domain: "example.local"
+
+# CA settings
+easyrsa_ca_expire: 3650  # 10 years
+easyrsa_cert_expire: 825  # 2 years + 3 months
+easyrsa_cert_renew: 30   # Days before expiration
+easyrsa_digest: "sha256"
+easyrsa_key_size: 4096
+
+# PKI admin user
+pki_admin_user: pki-admin
+pki_admin_group: pki-admin

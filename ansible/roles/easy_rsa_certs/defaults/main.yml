@@ -1,0 +1,22 @@
+---
+# Easy-RSA paths (must match easy_rsa role)
+easyrsa_install_dir: /opt/easy-rsa
+easyrsa_pki_dir: /opt/easy-rsa/pki
+
+# PKI admin user
+pki_admin_user: pki-admin
+pki_admin_group: pki-admin
+
+# Certificate settings (must match easy_rsa role)
+easyrsa_key_size: 4096
+easyrsa_cert_expire: 825
+easyrsa_digest: "sha256"
+
+# CA information (must match easy_rsa role)
+easyrsa_req_country: "FR"
+easyrsa_req_province: "IDF"
+easyrsa_req_city: "Paris"
+easyrsa_req_ou: "Certificate Authority"
+
+# PFX password (empty = no password)
+pfx_password: ""

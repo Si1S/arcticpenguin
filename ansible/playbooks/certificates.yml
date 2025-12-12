@@ -1,0 +1,236 @@
+---
+- name: Generate LDAPS and Internal Certificates
+  hosts: pki01
+  become: yes
+  
+  roles:
+    - easy_rsa_certs
+
+  post_tasks:
+    # Fetch retrieves certificates and automatically creates directories
+    
+    - name: Fetch CA certificate
+      fetch:
+        src: "{{ easyrsa_pki_dir }}/ca.crt"
+        dest: "./certificates/ca.crt"
+        flat: yes
+
+    # Fetch LDAPS certificates for all DCs
+    - name: Fetch LDAPS certificates for all DCs
+      fetch:
+        src: "{{ easyrsa_pki_dir }}/issued-certs/{{ item.0.cn }}.{{ item.1 }}"
+        dest: "./certificates/ldaps/{{ item.0.cn }}.{{ item.1 }}"
+        flat: yes
+      with_nested:
+        - "{{ ldaps_certificates }}"
+        - ['pfx', 'crt', 'key']
+
+    # Fetch internal certificates
+    - name: Fetch internal certificates
+      fetch:
+        src: "{{ easyrsa_pki_dir }}/issued-certs/{{ item.0.name }}.{{ item.1 }}"
+        dest: "./certificates/internal/{{ item.0.name }}.{{ item.1 }}"
+        flat: yes
+      with_nested:
+        - "{{ internal_certs }}"
+        - ['crt', 'key']
+
+    # Generate README on pki01 first, then fetch it
+    - name: Generate installation README on pki01
+      copy:
+        content: |
+          ========================================
+          ArcticPenguin PKI Certificates
+          ========================================
+          Generated: {{ ansible_date_time.iso8601 }}
+          PKI Server: {{ inventory_hostname }}
+          Public Domain: {{ public_domain }}
+          Internal Domain: {{ internal_domain }}
+          
+          ===== LDAPS CERTIFICATES =====
+          {% for dc in ldaps_certificates %}
+          {{ loop.index }}. {{ dc.cn }}
+             Files:
+               - {{ dc.cn }}.pfx (for Windows import)
+               - {{ dc.cn }}.crt (PEM certificate)
+               - {{ dc.cn }}.key (private key)
+             SAN: {{ dc.san | join(', ') }}
+          
+          {% endfor %}
+          
+          ===== INTERNAL SERVICE CERTIFICATES =====
+          {% for svc in internal_certs %}
+          {{ loop.index }}. {{ svc.name }}
+             Files:
+               - {{ svc.name }}.crt
+               - {{ svc.name }}.key
+             SAN: {{ svc.san | join(', ') }}
+          
+          {% endfor %}
+          
+          ===== CA ROOT CERTIFICATE =====
+          File: ca.crt
+          This CA certificate must be distributed to all clients that need
+          to trust certificates issued by this PKI.
+          
+          ========================================
+          INSTALLATION INSTRUCTIONS
+          ========================================
+          
+          ** LDAPS Installation on mad01 **
+          
+          1. Copy files to mad01:
+             - ca.crt
+             - mad01.arcticpenguin.local.pfx
+          
+          2. Import CA Root certificate:
+             certutil -addstore -f "Root" ca.crt
+          
+          3. Import LDAPS certificate:
+             certutil -importpfx -f mad01.arcticpenguin.local.pfx
+          
+          4. Verify certificate installation:
+             Get-ChildItem Cert:\LocalMachine\My | Where-Object {$_.Subject -like "*mad01*"}
+          
+          5. Check Enhanced Key Usages:
+             Get-ChildItem Cert:\LocalMachine\My | Where-Object {$_.Subject -like "*mad01*"} | Select-Object -ExpandProperty EnhancedKeyUsageList
+          
+          6. Restart Active Directory Domain Services:
+             Restart-Service NTDS -Force
+          
+          7. Test LDAPS connectivity:
+             Test-NetConnection -ComputerName mad01.arcticpenguin.local -Port 636
+          
+          8. Advanced test with ldp.exe:
+             - Open ldp.exe
+             - Connection -> Connect
+             - Server: mad01.arcticpenguin.local
+             - Port: 636
+             - Check "SSL"
+             - Click OK
+          
+          9. Verify in Event Viewer:
+             Get-EventLog -LogName "Directory Service" -Newest 20 | Where-Object {$_.Message -like "*LDAP*SSL*"}
+          
+          ** LDAPS Installation on mad02 **
+          
+          Repeat the same steps using mad02.arcticpenguin.local.pfx
+          
+          ** Internal Services Installation **
+          
+          For each internal service (Wazuh, Prometheus, Grafana, Nextcloud):
+          
+          1. Copy certificate and key files to the respective server
+          
+          2. Set appropriate permissions:
+             chmod 644 /path/to/service.crt
+             chmod 600 /path/to/service.key
+          
+          3. Configure the application to use these certificates
+             (refer to application-specific documentation)
+          
+          4. Distribute ca.crt to all clients that need to connect
+             to these services
+          
+          ** CA Distribution **
+          
+          Windows clients:
+            certutil -addstore -f "Root" ca.crt
+          
+          Linux clients (Ubuntu/Debian):
+            sudo cp ca.crt /usr/local/share/ca-certificates/arcticpenguin-ca.crt
+            sudo update-ca-certificates
+          
+          Linux clients (RHEL/CentOS):
+            sudo cp ca.crt /etc/pki/ca-trust/source/anchors/arcticpenguin-ca.crt
+            sudo update-ca-trust
+          
+          macOS clients:
+            sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ca.crt
+          
+          ========================================
+          CERTIFICATE VERIFICATION
+          ========================================
+          
+          View certificate details:
+            openssl x509 -in certificate.crt -text -noout
+          
+          Check certificate and key match:
+            openssl x509 -noout -modulus -in certificate.crt | openssl md5
+            openssl rsa -noout -modulus -in certificate.key | openssl md5
+          
+          Test SSL connection:
+            openssl s_client -connect hostname:port -CAfile ca.crt
+          
+          ========================================
+          SECURITY NOTES
+          ========================================
+          
+          - Protect all .key files with restrictive permissions (600)
+          - Secure the CA private key (/opt/easy-rsa/pki/private/ca.key)
+          - Consider shutting down pki01 after certificate generation
+          - Backup the entire /opt/easy-rsa/pki directory
+          - Document the CA passphrase if one was set
+          - Set certificate renewal reminders (certificates expire in {{ easyrsa_cert_expire }} days)
+          
+          ========================================
+          SHUTDOWN PKI SERVER
+          ========================================
+          
+          After verifying all certificates are correctly deployed:
+          
+          1. Create a backup:
+             tar -czf pki-backup-$(date +%Y%m%d).tar.gz /opt/easy-rsa/pki
+          
+          2. Copy backup to a secure location
+          
+          3. Shutdown pki01:
+             shutdown -h now
+          
+        dest: "/tmp/README.txt"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Fetch README from pki01
+      fetch:
+        src: "/tmp/README.txt"
+        dest: "./certificates/README.txt"
+        flat: yes
+
+    - name: Display completion message
+      debug:
+        msg: |
+          ========================================
+          Certificate generation completed!
+          ========================================
+          
+          All certificates have been retrieved to:
+          ./certificates/
+          
+          Directory structure:
+          certificates/
+          ├── ca.crt (Root CA)
+          ├── ldaps/
+          │   ├── mad01.arcticpenguin.local.pfx
+          │   ├── mad01.arcticpenguin.local.crt
+          │   ├── mad01.arcticpenguin.local.key
+          │   ├── mad02.arcticpenguin.local.pfx
+          │   ├── mad02.arcticpenguin.local.crt
+          │   └── mad02.arcticpenguin.local.key
+          ├── internal/
+          │   ├── wazuh.arcticpenguin.local.crt
+          │   ├── wazuh.arcticpenguin.local.key
+          │   ├── nextcloud.arcticpenguin.local.crt
+          │   └── nextcloud.arcticpenguin.local.key
+          └── README.txt
+          
+          Next steps:
+          1. Review README.txt for installation instructions
+          2. Deploy certificates to respective servers
+          3. Test LDAPS connectivity on domain controllers
+          4. Configure internal services to use their certificates
+          5. Distribute CA certificate to all clients
+          6. Backup PKI data and shutdown pki01
+          
+          Certificate validity: {{ easyrsa_cert_expire }} days

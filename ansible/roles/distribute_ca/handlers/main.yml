@@ -1,0 +1,4 @@
+---
+- name: Update CA certificates
+  command: "{{ ca_update_command }}"
+  listen: Update CA certificates

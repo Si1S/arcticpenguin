@@ -1,0 +1,31 @@
+---
+- name: Set CA certificate path for current OS
+  set_fact:
+    ca_cert_path: "{{ ca_cert_paths[ansible_os_family] }}"
+    ca_cert_dir: "{{ ca_cert_dirs[ansible_os_family] }}"
+    ca_update_command: "{{ ca_update_commands[ansible_os_family] }}"
+    ca_bundle_path: "{{ system_ca_bundle[ansible_os_family] }}"
+
+- name: Ensure CA certificates directory exists
+  file:
+    path: "{{ ca_cert_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy CA certificate to system
+  copy:
+    src: ca.crt
+    dest: "{{ ca_cert_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Update CA certificates
+
+- name: Verify CA certificate is readable
+  command: "openssl x509 -in {{ ca_cert_path }} -noout -subject"
+  register: ca_verify
+  changed_when: false
+
+- name: Display CA certificate information
+  debug:
+    msg: "CA certificate installed: {{ ca_verify.stdout }}"

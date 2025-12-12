@@ -1,0 +1,22 @@
+---
+- name: Deploy Easy-RSA PKI Infrastructure
+  hosts: pki01
+  become: yes
+  
+  roles:
+    - easy_rsa
+
+  post_tasks:
+    - name: Display CA certificate location
+      debug:
+        msg: |
+          ========================================
+          PKI successfully deployed on {{ inventory_hostname }}
+          ========================================
+          CA Certificate: {{ easyrsa_pki_dir }}/ca.crt
+          Installation: {{ easyrsa_install_dir }}
+          User: {{ pki_admin_user }}
+          
+          Next steps:
+          - Generate LDAPS and internal certificates
+          - Distribute CA to clients

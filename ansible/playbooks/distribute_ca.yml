@@ -1,0 +1,34 @@
+---
+- name: Distribute CA certificate to all hosts
+  hosts: all:!windows:!pki01
+  become: yes
+  
+  roles:
+    - distribute_ca
+  
+  post_tasks:
+    - name: Flush handlers to ensure CA update is complete
+      meta: flush_handlers
+    
+    - name: Wait for CA certificate to be available in system bundle
+      wait_for:
+        path: "{{ ca_bundle_path }}"
+        timeout: 10
+      vars:
+        ca_bundle_path: "{{ system_ca_bundle[ansible_os_family] }}"
+    
+    - name: Test CA certificate is in system trust store
+      shell: "grep -l 'Arctic Penguin Root CA' {{ ca_bundle_path }} || echo 'Not found in bundle yet'"
+      vars:
+        ca_bundle_path: "{{ system_ca_bundle[ansible_os_family] }}"
+      register: ca_in_bundle
+      changed_when: false
+      failed_when: false
+    
+    - name: Display CA trust status
+      debug:
+        msg: |
+          CA Certificate Distribution Summary:
+          - Installed at: {{ ca_cert_paths[ansible_os_family] }}
+          - System bundle: {{ system_ca_bundle[ansible_os_family] }}
+          - Status: {{ 'Trusted' if 'Not found' not in ca_in_bundle.stdout else 'Pending (may need time to propagate)' }}

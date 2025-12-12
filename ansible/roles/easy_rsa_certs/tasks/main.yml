@@ -1,0 +1,24 @@
+---
+- name: Ensure certificates output directory exists
+  file:
+    path: "{{ easyrsa_pki_dir }}/issued-certs"
+    state: directory
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0750'
+
+# LDAPS certificates
+- name: Generate LDAPS certificates for all DCs
+  include_tasks: generate_ldaps_cert.yml
+  loop: "{{ ldaps_certificates }}"
+  loop_control:
+    loop_var: ldaps_cert
+  when: ldaps_certificates is defined
+
+# Internal certiticates
+- name: Generate internal certificates
+  include_tasks: generate_internal_cert.yml
+  loop: "{{ internal_certs }}"
+  loop_control:
+    loop_var: cert
+  when: internal_certs is defined
