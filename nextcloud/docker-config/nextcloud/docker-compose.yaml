@@ -1,0 +1,37 @@
+services:
+  app:
+    image: cencerro/ncloud-ldap:latest
+    restart: always
+    ports:
+      - 443:443
+    volumes:
+      - /srv/nextcloud:/var/www/html
+      - /srv/nextcloud-conf/apache/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf:ro
+      - /srv/nextcloud-conf/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf:ro
+      - /srv/nextcloud-conf/certs/nextcloud.arcticpenguin.local.crt:/etc/ssl/certs/nextcloud.arcticpenguin.local.crt:ro
+      - /srv/nextcloud-conf/certs/nextcloud.arcticpenguin.local.key:/etc/ssl/private/nextcloud.arcticpenguin.local.key:ro
+      - /usr/local/share/ca-certificate/arcticpenguin-ca.crt:/usr/local/share/ca-certificate/arcticpenguin-ca.crt:ro
+        #Logs Apache
+      - /srv/nextcloud-logs:/var/log/apache2
+        # Config pour ldap
+      - /srv/nextcloud-conf/hosts:/etc/hosts:ro
+      - /srv/nextcloud-conf/ldap.conf:/etc/ldap/ldap.conf:ro
+
+    environment:
+      - APACHE_SERVER_NAME=nextcloud.arcticpenguin.local
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITEHOST=nextcloud.arcticpenguin.local
+      - OVERWRITECLIURL=https://nextcloud.arcticpenguin.local
+      #This requires the creation of a user and group with the specified PUID and PGID on the host system
+      - PUID=999
+      - PGID=987
+    # Enable Apache SSL and headers modules, link the configuration file for ssl where Apache will read it and start Apache in the foreground 
+    command: >
+      bash -c "a2enmod ssl headers socache_shmcb &&
+               a2ensite default-ssl &&
+               ln -s /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf &&
+               apache2-foreground"
+
+volumes:
+  nextcloud:
+
