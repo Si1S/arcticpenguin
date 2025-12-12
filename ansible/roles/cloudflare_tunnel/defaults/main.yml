@@ -1,0 +1,7 @@
+---
+# Cloudflare Tunnel defaults
+cloudflared_version: "latest"
+cloudflared_user: cloudflared
+cloudflared_group: cloudflared
+cloudflared_config_dir: /etc/cloudflared
+cloudflared_service_name: cloudflared

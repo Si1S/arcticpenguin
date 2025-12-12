@@ -1,0 +1,12 @@
+netplan_interface: eth0
+netplan_renderer: NetworkManager
+netplan_dhcp: true
+
+extra_authorized_users:
+ - wazuh
+
+ufw_rules:
+  - port: 22
+    from:
+      - "10.0.10.1"     # pfsense users interface
+      - "10.0.30.2"     # bas01

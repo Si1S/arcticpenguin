@@ -1,0 +1,13 @@
+all:
+  children:
+    linux_servers:
+      hosts:
+        mon01:
+        nxc01:
+        pki01:
+        waz01:
+        web01:
+    linux_desktops:
+      hosts:
+        bas01:
+        arc01:

@@ -1,0 +1,20 @@
+---
+# CA certificate paths by OS family
+ca_cert_paths:
+  Debian: /usr/local/share/ca-certificates/arcticpenguin-ca.crt
+  RedHat: /etc/pki/ca-trust/source/anchors/arcticpenguin-ca.crt
+
+# CA certificate directory by OS family
+ca_cert_dirs:
+  Debian: /usr/local/share/ca-certificates
+  RedHat: /etc/pki/ca-trust/source/anchors
+
+# Update command by OS family
+ca_update_commands:
+  Debian: update-ca-certificates
+  RedHat: update-ca-trust
+
+# System CA bundle path (for verification)
+system_ca_bundle:
+  Debian: /etc/ssl/certs/ca-certificates.crt
+  RedHat: /etc/pki/tls/certs/ca-bundle.crt

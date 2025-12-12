@@ -1,0 +1,93 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - wget
+      - openssl
+      - tar
+      - python3-pexpect
+    state: present
+    update_cache: yes
+
+- name: Create pki-admin group
+  group:
+    name: "{{ pki_admin_group }}"
+    state: present
+
+- name: Create pki-admin user
+  user:
+    name: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    groups: []
+    shell: /bin/bash
+    home: "/home/{{ pki_admin_user }}"
+    create_home: yes
+    comment: "PKI Administrator"
+
+- name: Create Easy-RSA installation directory
+  file:
+    path: "{{ easyrsa_install_dir }}"
+    state: directory
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0755'
+
+- name: Download Easy-RSA
+  get_url:
+    url: "https://github.com/OpenVPN/easy-rsa/releases/download/v{{ easyrsa_version }}/EasyRSA-{{ easyrsa_version }}.tgz"
+    dest: "/tmp/EasyRSA-{{ easyrsa_version }}.tgz"
+    mode: '0644'
+
+- name: Extract Easy-RSA
+  unarchive:
+    src: "/tmp/EasyRSA-{{ easyrsa_version }}.tgz"
+    dest: "{{ easyrsa_install_dir }}"
+    remote_src: yes
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    extra_opts: [--strip-components=1]
+
+- name: Deploy vars configuration file
+  template:
+    src: vars.j2
+    dest: "{{ easyrsa_install_dir }}/vars"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0600'
+
+- name: Initialize PKI
+  command: "{{ easyrsa_install_dir }}/easyrsa init-pki"
+  args:
+    creates: "{{ easyrsa_pki_dir }}"
+  become_user: "{{ pki_admin_user }}"
+  environment:
+    EASYRSA_PKI: "{{ easyrsa_pki_dir }}"
+
+- name: Build Certificate Authority (non-interactive)
+  command: "{{ easyrsa_install_dir }}/easyrsa --req-cn='{{ easyrsa_ca_cn }}' build-ca nopass"
+  args:
+    creates: "{{ easyrsa_pki_dir }}/ca.crt"
+  become_user: "{{ pki_admin_user }}"
+  environment:
+    EASYRSA_PKI: "{{ easyrsa_pki_dir }}"
+    EASYRSA_BATCH: "yes"
+
+- name: Create certificates directory for export
+  file:
+    path: "{{ easyrsa_pki_dir }}/issued-certs"
+    state: directory
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0750'
+
+- name: Display CA information
+  debug:
+    msg: |
+      ========================================
+      Easy-RSA PKI déployé avec succès!
+      ========================================
+      CA: {{ easyrsa_pki_dir }}/ca.crt
+      Installation: {{ easyrsa_install_dir }}
+      Utilisateur: {{ pki_admin_user }}
+      Domaine public: {{ public_domain }}
+      Domaine interne: {{ internal_domain }}

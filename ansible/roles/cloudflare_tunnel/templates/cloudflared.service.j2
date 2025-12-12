@@ -1,0 +1,20 @@
+[Unit]
+Description=Cloudflare Tunnel
+After=network.target
+
+[Service]
+Type=simple
+User={{ cloudflared_user }}
+Group={{ cloudflared_group }}
+ExecStart=/usr/bin/cloudflared tunnel run --token {{ cloudflared_tunnel_token }}
+Restart=on-failure
+RestartSec=5s
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

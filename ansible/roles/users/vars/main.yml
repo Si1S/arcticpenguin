@@ -1,0 +1,26 @@
+users:
+  - name: jr
+    groups: ['sudo']
+    shell: /bin/bash
+    pubkey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGmEGUsrG9hSY8/NeXP5aSPy5Peaps2z5OdGMSOZYUNl'
+    password: "{{ vault_password_jr }}"
+  - name: lekiks
+    groups: ['sudo']
+    shell: /bin/bash
+    pubkey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMqt8ioV27okc91lLDrDB4GyCPPUWISw6o29/1o8GQk'
+    password: "{{ vault_password_lekiks }}"
+  - name: toto
+    groups: ['sudo']
+    shell: /bin/bash
+    pubkey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDACf+qPiWFwzTpak3BpIo2/NUHRbI2vz/IF2hBobkni'
+    password: "{{ vault_password_toto }}"
+  - name: david
+    groups: ['sudo']
+    shell: /bin/bash
+    pubkey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJTpS6wbdFo7hb6P8i3ur04+JrE7Vw+bRmUFItOHz86'
+    password: "{{ vault_password_david }}"
+  - name: n0rk
+    groups: ['sudo']
+    shell: /bin/bash
+    pubkey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvviruFGq7OVkPQnDxjzAGaUXkulTQyptOdhU5Mp+MR'
+    password: "{{ vault_password_n0rk }}"

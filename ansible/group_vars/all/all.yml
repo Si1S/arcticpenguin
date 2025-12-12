@@ -1,0 +1,10 @@
+default_authorized_users:
+  - root
+  - jr
+  - toto
+  - lekiks
+  - n0rk
+  - david
+
+netplan_search_domains:
+  - arcticpenguin.local

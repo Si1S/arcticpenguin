@@ -1,0 +1,39 @@
+- name: Harden SSH daemon
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^{{ item.key }} "
+    line: "{{ item.key }} {{ item.value }}"
+    create: yes
+    state: present
+    backrefs: yes
+  loop: "{{ ssh_settings | dict2items }}"
+  when: item.key != 'AllowGroups'
+
+- name: Restrict SSH to AllowGroups
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^AllowGroups "
+    line: "AllowGroups {{ ssh_settings.AllowGroups }}"
+    create: yes
+    state: present
+
+- name: Set AllowUsers if defined
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^AllowUsers "
+    line: "AllowUsers {{ ssh_allow_users | join(' ') }}"
+    create: yes
+    state: present
+  when: ssh_allow_users is defined and ssh_allow_users | length > 0
+
+- name: Remove AllowUsers if undefined or empty
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^AllowUsers "
+    state: absent
+  when: ssh_allow_users is not defined or ssh_allow_users | length == 0
+
+- name: Restart sshd
+  service:
+    name: ssh
+    state: restarted

@@ -1,0 +1,76 @@
+netplan_ip: 10.0.20.9
+netplan_gateway: 10.0.20.1
+netplan_interface: eth0
+netplan_dns:
+  - 10.0.20.2
+  - 10.0.20.3
+  - 9.9.9.9
+
+extra_authorized_users:
+ - pki-admin
+ - node-exp
+ - wazuh
+
+ufw_rules:
+  - port: 22
+    from:
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+
+  - port: 9100          # node exporter
+    from:
+      - "10.0.20.6"     # mon01
+      - "10.0.30.2"     # bas01
+
+  - port: 9256          # process exporter
+    from:
+      - "10.0.20.6"     # mon01
+      - "10.0.30.2"     # bas01
+
+# CA Common Name
+easyrsa_ca_cn: "Arctic Penguin Root CA"
+
+# CA Information
+easyrsa_req_org: "Arctic Penguin Infrastructure"
+easyrsa_req_email: "pki@arcticpenguin.org"
+easyrsa_req_ou: "Certificate Authority"
+easyrsa_req_country: "FR"
+easyrsa_req_province: "IDF"
+easyrsa_req_city: "Paris"
+
+public_domain: "arcticpenguin.org"
+internal_domain: "arcticpenguin.local"
+
+# LDAPS certificates for Active Directory
+ldaps_certificates:
+  - cn: "mad01.arcticpenguin.local"
+    san:
+      - "mad01.arcticpenguin.local"
+      - "arcticpenguin.local"
+      - "mad01"
+      - "ldap.arcticpenguin.local"
+
+  - cn: "mad02.arcticpenguin.local"
+    san:
+      - "mad02.arcticpenguin.local"
+      - "arcticpenguin.local"
+      - "mad02"
+      - "ldap.arcticpenguin.local"
+
+# Internal certificates
+internal_certs:
+  - name: "wazuh.arcticpenguin.local"
+    type: server
+    san:
+      - "wazuh.arcticpenguin.local"
+      - "waz01.arcticpenguin.local"
+      - "wazuh"
+      - "waz01"
+
+  - name: "nextcloud.arcticpenguin.local"
+    type: server
+    san:
+      - "nextcloud.arcticpenguin.local"
+      - "nxc01.arcticpenguin.local"
+      - "nextcloud"
+      - "nxc01"

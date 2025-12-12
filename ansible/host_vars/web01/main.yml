@@ -1,0 +1,81 @@
+netplan_ip: 10.0.20.7
+netplan_gateway: 10.0.20.1
+netplan_interface: eth0
+netplan_dns:
+  - 10.0.20.2
+  - 10.0.20.3
+  - 9.9.9.9
+
+extra_authorized_users:
+ - cloudflared
+ - node-exp
+ - wazuh
+ - webuser
+ - dbuser
+
+ufw_rules:
+  # Inbound rules
+  - port: 22
+    from:
+      - "10.0.20.1"         # pfsense servers interface
+      - "10.0.30.2"         # bas01
+
+  - port: 9100              # node exporter
+    from:
+      - "10.0.20.6"         # mon01
+      - "10.0.30.2"         # bas01
+
+  - port: 9256              # process exporter
+    from:
+      - "10.0.20.6"         # mon01
+      - "10.0.30.2"         # bas01
+
+  - port: 8080              # arcticpenguin
+    from:
+      - "127.0.0.1"
+      - "::1"
+
+# Outbound rules
+ufw_rules_outgoing:
+  - port: 1514              # wazuh agents
+    to:
+      - "10.0.20.5"         # users subnet
+
+  - port: 1515              # wazuh enrollment
+    to:
+      - "10.0.20.5"         # users subnet
+
+  - port: 7844              # Cloudflare Tunnel
+    proto: udp
+    to: "{{ cloudflare_ipv4_ranges }}"
+
+  - port: 80
+    proto: tcp
+    to:
+      - "172.20.0.10"       # nginx container
+
+  - port: 53
+    proto: udp
+    to:
+      - "10.0.20.2"         # mad01
+      - "10.0.20.3"         # mad02
+
+  - port: 22                # Git SSH to GitHub
+    to: "{{ github_ipv4_ranges }}"
+
+  - port: 443               # Cloudflare API
+    to: "{{ cloudflare_api_ipv4_ranges }}"
+
+ufw_rules_outgoing_ipv6:
+  - port: 7844              # Cloudflare Tunnel
+    proto: udp
+    to: "{{ cloudflare_ipv6_ranges }}"
+
+  - port: 443               # Cloudflare API
+    to: "{{ cloudflare_api_ipv6_ranges }}"
+
+ufw_outgoing_policy: deny
+
+cloudflared_tunnel_token: "{{ vault_cloudflared_tunnel_token }}"
+cloudflared_hostname: arcticpenguin.org
+cloudflared_service_url: http://localhost:8080

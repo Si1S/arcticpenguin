@@ -1,0 +1,31 @@
+# OpenSSL configuration for LDAPS certificate
+# CN: {{ ldaps_cert.cn }}
+# Domain: {{ internal_domain }}
+
+[ req ]
+default_bits        = {{ easyrsa_key_size }}
+distinguished_name  = req_distinguished_name
+req_extensions      = v3_req
+prompt              = no
+
+[ req_distinguished_name ]
+C  = {{ easyrsa_req_country }}
+ST = {{ easyrsa_req_province }}
+L  = {{ easyrsa_req_city }}
+O  = {{ easyrsa_req_org }}
+OU = LDAPS Certificate
+CN = {{ ldaps_cert.cn }}
+emailAddress = {{ easyrsa_req_email }}
+
+[ v3_req ]
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = {{ ldaps_cert.cn }}
+{% if ldaps_cert.san is defined %}
+{% for san in ldaps_cert.san %}
+DNS.{{ loop.index + 1 }} = {{ san }}
+{% endfor %}
+{% endif %}

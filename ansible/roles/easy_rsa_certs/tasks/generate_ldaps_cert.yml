@@ -1,0 +1,95 @@
+---
+- name: Generate OpenSSL configuration for {{ ldaps_cert.cn }}
+  template:
+    src: ldaps_openssl.cnf.j2
+    dest: "{{ easyrsa_pki_dir }}/{{ ldaps_cert.cn }}_openssl.cnf"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0644'
+
+- name: Generate private key for {{ ldaps_cert.cn }}
+  command: >
+    openssl genrsa 
+    -out {{ easyrsa_pki_dir }}/private/{{ ldaps_cert.cn }}.key 
+    {{ easyrsa_key_size }}
+  args:
+    creates: "{{ easyrsa_pki_dir }}/private/{{ ldaps_cert.cn }}.key"
+  become_user: "{{ pki_admin_user }}"
+
+- name: Set permissions on private key for {{ ldaps_cert.cn }}
+  file:
+    path: "{{ easyrsa_pki_dir }}/private/{{ ldaps_cert.cn }}.key"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0600'
+
+- name: Generate CSR for {{ ldaps_cert.cn }}
+  command: >
+    openssl req -new
+    -key {{ easyrsa_pki_dir }}/private/{{ ldaps_cert.cn }}.key
+    -out {{ easyrsa_pki_dir }}/reqs/{{ ldaps_cert.cn }}.csr
+    -config {{ easyrsa_pki_dir }}/{{ ldaps_cert.cn }}_openssl.cnf
+  args:
+    creates: "{{ easyrsa_pki_dir }}/reqs/{{ ldaps_cert.cn }}.csr"
+  become_user: "{{ pki_admin_user }}"
+
+- name: Import CSR for {{ ldaps_cert.cn }}
+  command: >
+    {{ easyrsa_install_dir }}/easyrsa import-req
+    {{ easyrsa_pki_dir }}/reqs/{{ ldaps_cert.cn }}.csr
+    {{ ldaps_cert.cn | replace('.', '_') }}
+  args:
+    creates: "{{ easyrsa_pki_dir }}/reqs/{{ ldaps_cert.cn | replace('.', '_') }}.req"
+  become_user: "{{ pki_admin_user }}"
+  environment:
+    EASYRSA_PKI: "{{ easyrsa_pki_dir }}"
+
+- name: Sign LDAPS certificate for {{ ldaps_cert.cn }}
+  command: >
+    {{ easyrsa_install_dir }}/easyrsa 
+    --days={{ easyrsa_cert_expire }}
+    sign-req server {{ ldaps_cert.cn | replace('.', '_') }}
+  args:
+    creates: "{{ easyrsa_pki_dir }}/issued/{{ ldaps_cert.cn | replace('.', '_') }}.crt"
+  become_user: "{{ pki_admin_user }}"
+  environment:
+    EASYRSA_PKI: "{{ easyrsa_pki_dir }}"
+    EASYRSA_BATCH: "yes"
+
+- name: Create PFX bundle for {{ ldaps_cert.cn }}
+  command: >
+    openssl pkcs12 -export
+    -out {{ easyrsa_pki_dir }}/issued-certs/{{ ldaps_cert.cn }}.pfx
+    -inkey {{ easyrsa_pki_dir }}/private/{{ ldaps_cert.cn }}.key
+    -in {{ easyrsa_pki_dir }}/issued/{{ ldaps_cert.cn | replace('.', '_') }}.crt
+    -certfile {{ easyrsa_pki_dir }}/ca.crt
+    -passout pass:{{ pfx_password | default('') }}
+    -name "{{ ldaps_cert.cn }} LDAPS Certificate"
+  args:
+    creates: "{{ easyrsa_pki_dir }}/issued-certs/{{ ldaps_cert.cn }}.pfx"
+  become_user: "{{ pki_admin_user }}"
+
+- name: Set permissions on PFX for {{ ldaps_cert.cn }}
+  file:
+    path: "{{ easyrsa_pki_dir }}/issued-certs/{{ ldaps_cert.cn }}.pfx"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0600'
+
+- name: Copy certificate to issued-certs for {{ ldaps_cert.cn }}
+  copy:
+    src: "{{ easyrsa_pki_dir }}/issued/{{ ldaps_cert.cn | replace('.', '_') }}.crt"
+    dest: "{{ easyrsa_pki_dir }}/issued-certs/{{ ldaps_cert.cn }}.crt"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0644'
+    remote_src: yes
+
+- name: Copy private key to issued-certs for {{ ldaps_cert.cn }}
+  copy:
+    src: "{{ easyrsa_pki_dir }}/private/{{ ldaps_cert.cn }}.key"
+    dest: "{{ easyrsa_pki_dir }}/issued-certs/{{ ldaps_cert.cn }}.key"
+    owner: "{{ pki_admin_user }}"
+    group: "{{ pki_admin_group }}"
+    mode: '0600'
+    remote_src: yes

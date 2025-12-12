@@ -1,0 +1,67 @@
+---
+- name: Check if ufw is installed
+  command: dpkg -s ufw
+  register: ufw_installed
+  ignore_errors: yes
+
+- name: Install ufw
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+  when: ufw_installed.rc != 0
+  tags: ['ufw', 'install']
+
+- name: Set default UFW policies
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: deny }
+    - { direction: outgoing, policy: "{{ ufw_outgoing_policy | default('allow') }}" }
+    - { direction: routed,  policy: deny }
+  tags: ['ufw', 'policy']
+
+- name: Apply UFW incoming rules with protocol default tcp
+  community.general.ufw:
+    rule: allow
+    port: "{{ rule_item.0.port }}"
+    protocol: "{{ rule_item.0.proto | default('tcp') }}"
+    from_ip: "{{ rule_item.1 }}"
+    direction: in
+  loop: "{{ ufw_rules | default([]) | subelements('from') }}"
+  loop_control:
+    loop_var: rule_item
+    label: "IN Port {{ rule_item.0.port }}/{{ rule_item.0.proto | default('tcp') }} from {{ rule_item.1 }}"
+  tags: ['ufw', 'rules', 'incoming']
+
+- name: Apply UFW outgoing rules with destination filtering and protocol default tcp
+  community.general.ufw:
+    rule: allow
+    direction: out
+    port: "{{ rule_item.0.port | default(omit) }}"
+    protocol: "{{ rule_item.0.proto | default('tcp') }}"
+    to_ip: "{{ rule_item.1 }}"
+  loop: "{{ ufw_rules_outgoing | default([]) | subelements('to') }}"
+  loop_control:
+    loop_var: rule_item
+    label: "OUT Port {{ rule_item.0.port | default('any') }}/{{ rule_item.0.proto | default('tcp') }} to {{ rule_item.1 }}"
+  tags: ['ufw', 'rules', 'outgoing']
+
+- name: Apply UFW outgoing IPv6 rules for Cloudflare ranges with protocol default tcp
+  community.general.ufw:
+    rule: allow
+    direction: out
+    port: "{{ rule_item.0.port }}"
+    protocol: "{{ rule_item.0.proto | default('tcp') }}"
+    to_ip: "{{ rule_item.1 }}"
+  loop: "{{ ufw_rules_outgoing_ipv6 | default([]) | subelements('to') }}"
+  loop_control:
+    loop_var: rule_item
+    label: "OUT IPv6 Port {{ rule_item.0.port }}/{{ rule_item.0.proto | default('tcp') }} to {{ rule_item.1 }}"
+  tags: ['ufw', 'ipv6', 'cloudflare']
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  tags: ['ufw', 'enable']

@@ -1,0 +1,8 @@
+---
+- name: Deploy Prometheus Exporters (node_exporter + process_exporter)
+  hosts: all:!mon01:!arc01
+  become: yes
+
+  roles:
+    - role: node_exporter
+    - role: process_exporter
