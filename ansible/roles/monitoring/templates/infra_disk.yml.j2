@@ -1,0 +1,26 @@
+groups:
+- name: disk_alerts
+  rules:
+  # CRITICAL: disk available space < {{ (disk_critical_threshold * 100) | int }}% for 5m
+  - alert: disk_saturated
+    expr: (node_filesystem_avail_bytes{mountpoint!~"/boot|/tmp.*|/run.*",fstype!~"tmpfs|squashfs|overlay"} / node_filesystem_size_bytes{mountpoint!~"/boot|/tmp.*|/run.*",fstype!~"tmpfs|squashfs|overlay"}) < {{ disk_critical_threshold }}
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+{% raw %}
+      summary: "Critical disk space on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+      description: "Mount point {{ $labels.mountpoint }} on {{ $labels.instance }} has only {{ $value | humanizePercentage }} free space left."
+{% endraw %}
+  
+  # WARNING: disk available space < {{ (disk_warning_threshold * 100) | int }}% for 10m
+  - alert: disk_low_free_space
+    expr: (node_filesystem_avail_bytes{mountpoint!~"/boot|/tmp.*|/run.*",fstype!~"tmpfs|squashfs|overlay"} / node_filesystem_size_bytes{mountpoint!~"/boot|/tmp.*|/run.*",fstype!~"tmpfs|squashfs|overlay"}) < {{ disk_warning_threshold }}
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+{% raw %}
+      summary: "Low disk space on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+      description: "Mount point {{ $labels.mountpoint }} on {{ $labels.instance }} has only {{ $value | humanizePercentage }} free space left."
+{% endraw %}

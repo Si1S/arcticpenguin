@@ -1,0 +1,28 @@
+modules:
+  http_2xx:
+    prober: http
+    timeout: {{ blackbox_http_timeout }}
+    http:
+      valid_http_versions:
+{% for version in blackbox_http_valid_http_versions %}
+        - "{{ version }}"
+{% endfor %}
+      valid_status_codes: []  # Defaults to 2xx
+      method: {{ blackbox_http_method }}
+      follow_redirects: {{ blackbox_http_follow_redirects | lower }}
+      fail_if_ssl: {{ blackbox_http_fail_if_ssl | lower }}
+      fail_if_not_ssl: {{ blackbox_http_fail_if_not_ssl | lower }}
+{% if blackbox_http_fail_if_body_matches_regexp %}
+      fail_if_body_matches_regexp:
+{% for pattern in blackbox_http_fail_if_body_matches_regexp %}
+        - "{{ pattern }}"
+{% endfor %}
+{% endif %}
+      tls_config:
+        insecure_skip_verify: {{ blackbox_http_insecure_skip_verify | lower }}
+{% if blackbox_http_preferred_ip_protocol is defined and blackbox_http_preferred_ip_protocol %}
+      preferred_ip_protocol: "{{ blackbox_http_preferred_ip_protocol }}"
+{% endif %}
+{% if blackbox_http_ip_protocol_fallback is defined %}
+      ip_protocol_fallback: {{ blackbox_http_ip_protocol_fallback | lower }}
+{% endif %}

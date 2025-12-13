@@ -1,0 +1,26 @@
+groups:
+- name: memory_alerts
+  rules:
+  # CRITICAL: Memory > {{ (memory_critical_threshold * 100) | int }}% for 3m
+  - alert: memory_saturated
+    expr: (1 - (node_memory_MemAvailable_bytes{} / node_memory_MemTotal_bytes{})) > {{ memory_critical_threshold }}
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+{% raw %}
+      summary: "Critical memory usage on {{ $labels.instance }}"
+      description: "Instance {{ $labels.instance }} has been using {{ $value | humanizePercentage }} of its memory for more than 3 minutes. (Threshold: {% endraw %}{{ (memory_critical_threshold * 100) | int }}{% raw %}%)"
+{% endraw %}
+  
+  # WARNING: Memory > {{ (memory_warning_threshold * 100) | int }}% for 5m
+  - alert: memory_high
+    expr: (1 - (node_memory_MemAvailable_bytes{} / node_memory_MemTotal_bytes{})) > {{ memory_warning_threshold }}
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+{% raw %}
+      summary: "High memory usage on {{ $labels.instance }}"
+      description: "Instance {{ $labels.instance }} has been using {{ $value | humanizePercentage }} of its memory for more than 5 minutes. (Threshold: {% endraw %}{{ (memory_warning_threshold * 100) | int }}{% raw %}%)"
+{% endraw %}

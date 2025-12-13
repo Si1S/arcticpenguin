@@ -1,0 +1,14 @@
+groups:
+- name: node_alerts
+  rules:
+  # CRITICAL: Node down for 1m
+  - alert: node_down
+    expr: up{job=~".*node.*"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+{% raw %}
+      summary: "Node down: {{ $labels.instance }}"
+      description: "Instance {{ $labels.instance }} (job: {{ $labels.job }}) has been unreachable for more than 1 minute. The machine might be powered off or the Node Exporter service is down."
+{% endraw %}

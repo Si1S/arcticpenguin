@@ -1,0 +1,26 @@
+groups:
+- name: cpu_alerts
+  rules:
+  # CRITICAL: CPU > {{ (cpu_critical_threshold * 100) | int }}% for 3m
+  - alert: cpu_saturated
+    expr: (1 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])))) > {{ cpu_critical_threshold }}
+    for: 3m
+    labels:
+      severity: critical
+    annotations:
+{% raw %}
+      summary: "CPU saturation on {{ $labels.instance }}"
+      description: "Instance {{ $labels.instance }} is saturated. CPU usage has been critically high at {{ $value | humanizePercentage }} for over 3 minutes. This is causing performance degradation and requires immediate action. (Threshold: {% endraw %}{{ (cpu_critical_threshold * 100) | int }}{% raw %}%)"
+{% endraw %}
+  
+  # WARNING: CPU > {{ (cpu_warning_threshold * 100) | int }}% for 5m
+  - alert: cpu_high
+    expr: (1 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])))) > {{ cpu_warning_threshold }}
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+{% raw %}
+      summary: "High CPU usage on {{ $labels.instance }}"
+      description: "Instance {{ $labels.instance }} has sustained a high CPU usage of {{ $value | humanizePercentage }} for over 5 minutes. This may indicate increased load or a potential issue that needs investigation. (Threshold: {% endraw %}{{ (cpu_warning_threshold * 100) | int }}{% raw %}%)"
+{% endraw %}

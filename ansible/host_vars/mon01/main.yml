@@ -1,0 +1,108 @@
+netplan_ip: 10.0.20.6
+netplan_gateway: 10.0.20.1
+netplan_interface: eth0
+netplan_dns:
+  - 10.0.20.2
+  - 10.0.20.3
+  - 9.9.9.9
+
+extra_authorized_users:
+ - node-exp
+ - wazuh
+ - monitoring
+
+ufw_rules:
+  - port: 22
+    from:
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+
+  - port: 9090          # prometheus
+    from:
+      - "172.18.0.0/16" # docker subnet
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+
+  - port: 3000          # grafana
+    from:
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+      - "10.0.10.0/24"  # users subnet
+
+  - port: 9093          # alertmanager
+    from:
+      - "10.0.20.1"     # pfsense servers interface
+      - "10.0.30.2"     # bas01
+      - "10.0.10.0/24"  # users subnet
+
+monitoring_user: monitoring
+monitoring_project_dir: /opt/monitoring
+monitoring_repo: "git@github.com:Si1S/arcticpenguin.git"
+monitoring_branch: main
+
+prometheus_external_url: "http://10.0.20.6:9090"
+grafana_admin_user: "admin"
+
+# Exporter targets
+node_exporter_targets:
+  - "10.0.20.5:9100"
+  - "10.0.20.8:9100"
+  - "10.0.30.2:9100"
+  - "10.0.20.4:9100"
+  - "10.0.20.7:9100"
+  - "10.0.20.9:9100"
+
+process_exporter_targets:
+  - "10.0.20.5:9256"
+  - "10.0.20.8:9256"
+  - "10.0.30.2:9256"
+  - "10.0.20.4:9256"
+  - "10.0.20.7:9256"
+  - "10.0.20.9:9256"
+
+# CPU thresholds
+cpu_critical_threshold: 0.8
+cpu_warning_threshold: 0.5
+
+# Memory thresholds
+memory_critical_threshold: 0.85
+memory_warning_threshold: 0.7
+
+# Disk thresholds
+disk_critical_threshold: 0.1
+disk_warning_threshold: 0.2
+
+# Blackbox Exporter HTTP module config
+blackbox_http_timeout: "5s"
+blackbox_http_method: "GET"
+blackbox_http_follow_redirects: true
+blackbox_http_valid_http_versions:
+  - "HTTP/1.1"
+  - "HTTP/2.0"
+blackbox_http_fail_if_ssl: false
+blackbox_http_fail_if_not_ssl: false
+blackbox_http_fail_if_body_matches_regexp:
+  - "Could not connect to database"
+blackbox_http_insecure_skip_verify: true
+blackbox_http_preferred_ip_protocol: "ip6"  # ou "ip4"
+blackbox_http_ip_protocol_fallback: true
+
+# Alertmanager config
+alertmanager_resolve_timeout: "5m"
+alertmanager_default_receiver: "email-alerts"
+alertmanager_group_by:
+  - "instance"
+  - "severity"
+alertmanager_group_wait: "30s"
+alertmanager_group_interval: "5m"
+alertmanager_repeat_interval: "4h"
+
+# Email receiver config
+alertmanager_email_to: "xxx@gmail.com"
+alertmanager_email_from: "alertmanager@example.com"
+alertmanager_smtp_host: "smtp.example.com"
+alertmanager_smtp_port: 465
+alertmanager_smtp_username: "alertmanager@example.com"
+alertmanager_smtp_password: "{{ vault_alertmanager_smtp_password }}"
+alertmanager_require_tls: false
+alertmanager_send_resolved: true

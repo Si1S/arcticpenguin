@@ -1,0 +1,25 @@
+global:
+  resolve_timeout: {{ alertmanager_resolve_timeout }}
+
+
+route:
+  receiver: "{{ alertmanager_default_receiver }}"
+  group_by:
+{% for label in alertmanager_group_by %}
+    - '{{ label }}'
+{% endfor %}
+  group_wait: {{ alertmanager_group_wait }}
+  group_interval: {{ alertmanager_group_interval }}
+  repeat_interval: {{ alertmanager_repeat_interval }}
+
+
+receivers:
+  - name: "{{ alertmanager_default_receiver }}"
+    email_configs:
+      - to: "{{ alertmanager_email_to }}"
+        from: "{{ alertmanager_email_from }}"
+        smarthost: "{{ alertmanager_smtp_host }}:{{ alertmanager_smtp_port }}"
+        auth_username: "{{ alertmanager_smtp_username }}"
+        auth_password: "{{ alertmanager_smtp_password }}"
+        require_tls: {{ alertmanager_require_tls | lower }}
+        send_resolved: {{ alertmanager_send_resolved | lower }}

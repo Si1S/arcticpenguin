@@ -1,0 +1,152 @@
+---
+
+- name: Ensure monitoring user exists
+  ansible.builtin.user:
+    name: "{{ monitoring_user }}"
+    shell: /bin/bash
+    create_home: true
+
+- name: Add monitoring user to docker group
+  ansible.builtin.user:
+    name: "{{ monitoring_user }}"
+    groups: docker
+    append: true
+
+- name: Generate SSH key for monitoring user if missing
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.command:
+    cmd: ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ''
+    creates: ~/.ssh/id_ed25519
+  tags: [ssh-key]
+
+- name: Show public SSH key for GitHub deploy key
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.command:
+    cmd: cat ~/.ssh/id_ed25519.pub
+  register: monitoring_pubkey
+  tags: [ssh-key]
+
+- name: Display public SSH key (copy/paste into GitHub Deploy Key)
+  ansible.builtin.debug:
+    msg:
+      - "Add this key as a read-only Deploy Key on GitHub (repo Si1S/arcticpenguin):"
+      - "{{ monitoring_pubkey.stdout }}"
+  tags: [ssh-key]
+
+- name: Checkout arcticpenguin repository
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.git:
+    repo: "{{ monitoring_repo }}"
+    dest: /tmp/arcticpenguin
+    version: "{{ monitoring_branch }}"
+    update: yes
+    ssh_opts: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+- name: Copy monitoring folder to /opt/monitoring
+  ansible.builtin.copy:
+    src: /tmp/arcticpenguin/monitoring/
+    dest: /opt/monitoring/
+    remote_src: yes
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+  when: not ansible_check_mode
+
+- name: Ensure prometheus directory exists
+  ansible.builtin.file:
+    path: /opt/monitoring/prometheus
+    state: directory
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: "0755"
+
+- name: Render prometheus.yml from template
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /opt/monitoring/prometheus/prometheus.yml
+    mode: "0644"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+
+- name: Render prometheus web.yml from template
+  ansible.builtin.template:
+    src: prometheus_web.yml.j2
+    dest: /opt/monitoring/prometheus/web.yml
+    mode: "0644"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+
+- name: Ensure prometheus rules directory exists
+  ansible.builtin.file:
+    path: /opt/monitoring/prometheus/rules
+    state: directory
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: "0755"
+
+- name: Render prometheus rule files from templates
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/opt/monitoring/prometheus/rules/{{ item }}"
+    mode: "0644"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+  loop:
+    - infra_cpu.yml
+    - infra_disk.yml
+    - infra_memory.yml
+    - infra_node.yml
+
+- name: Ensure blackbox exporter config directory exists
+  ansible.builtin.file:
+    path: /opt/monitoring/blackbox_exporter
+    state: directory
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: "0755"
+
+- name: Render blackbox exporter modules config from template
+  ansible.builtin.template:
+    src: blackbox_modules.yml.j2
+    dest: /opt/monitoring/blackbox_exporter/blackbox.yml
+    mode: "0644"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+
+- name: Ensure alertmanager config directory exists
+  ansible.builtin.file:
+    path: /opt/monitoring/alertmanager
+    state: directory
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+    mode: "0755"
+
+- name: Render alertmanager config from template
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: /opt/monitoring/alertmanager/alertmanager.yml
+    mode: "0644"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+
+- name: Render monitoring .env from template
+  ansible.builtin.template:
+    src: monitoring.env.j2
+    dest: /opt/monitoring/.env
+    mode: "0640"
+    owner: "{{ monitoring_user }}"
+    group: "{{ monitoring_user }}"
+
+- name: Cleanup temporary arcticpenguin clone
+  ansible.builtin.file:
+    path: /tmp/arcticpenguin
+    state: absent
+
+- name: Run docker compose
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: /opt/monitoring
