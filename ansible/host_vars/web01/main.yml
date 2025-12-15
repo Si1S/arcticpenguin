@@ -74,6 +74,9 @@ ufw_rules_outgoing_ipv6:
   - port: 443               # Cloudflare API
     to: "{{ cloudflare_api_ipv6_ranges }}"
 
+  - port: 22                # Git SSH to GitHub
+    to: "{{ github_ipv6_ranges }}"
+
 ufw_outgoing_policy: deny
 
 cloudflared_tunnel_token: "{{ vault_cloudflared_tunnel_token }}"
