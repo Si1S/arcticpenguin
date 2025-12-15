@@ -47,7 +47,7 @@ ufw_rules_outgoing:
 
   - port: 7844              # Cloudflare Tunnel
     proto: udp
-    to: "{{ cloudflare_ipv4_ranges }}"
+    to: "{{ cloudflare_tunnel_ipv4_ranges }}"
 
   - port: 80
     proto: tcp
@@ -69,7 +69,7 @@ ufw_rules_outgoing:
 ufw_rules_outgoing_ipv6:
   - port: 7844              # Cloudflare Tunnel
     proto: udp
-    to: "{{ cloudflare_ipv6_ranges }}"
+    to: "{{ cloudflare_tunnel_ipv6_ranges }}"
 
   - port: 443               # Cloudflare API
     to: "{{ cloudflare_api_ipv6_ranges }}"

@@ -1,7 +1,7 @@
-cloudflare_ipv4_ranges:
+cloudflare_tunnel_ipv4_ranges:
   - 198.41.128.0/17
 
-cloudflare_ipv6_ranges:
+cloudflare_tunnel_ipv6_ranges:
   - 2606:4700::/32
 
 cloudflare_api_ipv4_ranges:
