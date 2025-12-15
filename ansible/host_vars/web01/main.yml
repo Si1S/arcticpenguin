@@ -17,7 +17,7 @@ ufw_rules:
   # Inbound rules
   - port: 22
     from:
-      - "10.0.20.1"         # pfsense servers interface
+      - "10.0.40.1"         # pfsense servers interface
       - "10.0.30.2"         # bas01
 
   - port: 9100              # node exporter
