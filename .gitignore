@@ -1,11 +1,9 @@
-# Secretos
-.env
-*.env
-**/.env
+# Secrets
+**/*.env
 *.key
 *.pem
 
-# Datos de volúmenes
+# Volume data
 **/data/
 **/uploads/
 **/backups/
@@ -14,3 +12,7 @@
 **/config/config.php
 **/hosts
 **/ldap.conf
+
+# Logs
+**/*.log
+**/logs/
