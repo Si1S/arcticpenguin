@@ -39,11 +39,11 @@ ufw_rules:
 ufw_rules_outgoing:
   - port: 1514              # wazuh agents
     to:
-      - "10.0.20.5"         # users subnet
+      - "10.0.20.5"         # waz01
 
   - port: 1515              # wazuh enrollment
     to:
-      - "10.0.20.5"         # users subnet
+      - "10.0.20.5"         # waz01
 
   - port: 7844              # Cloudflare Tunnel
     proto: udp
