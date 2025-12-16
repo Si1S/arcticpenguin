@@ -12,7 +12,7 @@
     groups: docker
     append: true
 
-# task for priavte repository (useless for public repo)
+# task for private repository (useless for public repo)
 - name: Generate SSH key for monitoring user if missing
   become: true
   become_user: "{{ monitoring_user }}"
@@ -21,7 +21,7 @@
     creates: ~/.ssh/id_ed25519
   tags: [ssh-key]
 
-# task for priavte repository (useless for public repo)
+# task for private repository (useless for public repo)
 - name: Show public SSH key for GitHub deploy key
   become: true
   become_user: "{{ monitoring_user }}"
@@ -30,7 +30,7 @@
   register: monitoring_pubkey
   tags: [ssh-key]
 
-# task for priavte repository (useless for public repo)
+# task for private repository (useless for public repo)
 - name: Display public SSH key (copy/paste into GitHub Deploy Key)
   ansible.builtin.debug:
     msg:
