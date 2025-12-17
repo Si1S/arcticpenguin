@@ -1,0 +1,34 @@
+<VirtualHost *:443>
+	ServerAdmin webmaster@localhost
+	ServerName {{ Nextcloud_Server_Name }}
+	DocumentRoot {{ nextcloud_www_dir }}
+
+	ServerName {{ Nextcloud_Server_Name }}
+		<IfModule mod_headers.c>
+		 Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains; preload"
+		</IfModule>
+	
+	<Directory {{ nextcloud_www_dir }}>
+    	  Options +FollowSymlinks
+    	  AllowOverride All
+    	  Require all granted   
+    	  <IfModule mod_dav.c>
+                Dav off
+    	  </IfModule>
+	</Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+	SSLEngine on
+	SSLCertificateFile      /etc/ssl/certs/{{ SSL_Certificate_File }}
+	SSLCertificateKeyFile   /etc/ssl/private/{{ SSL_CertificateKey_File }}
+
+	<FilesMatch "\.(?:cgi|shtml|phtml|php)$">
+		SSLOptions +StdEnvVars
+	</FilesMatch>
+	<Directory /usr/lib/cgi-bin>
+		SSLOptions +StdEnvVars
+	</Directory>
+</VirtualHost>
+

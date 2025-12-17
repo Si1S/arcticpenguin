@@ -1,0 +1,14 @@
+---
+nextcloud_www_dir: /var/www/html
+Nextcloud_Server_Name: "nextcloud.arcticpenguin.local"
+SSL_Certificate_File: "nextcloud.arcticpenguin.local.crt"
+SSL_CertificateKey_File: "nextcloud.arcticpenguin.local.key"
+
+Docker_nextcloud_log_path: "/srv/nextcloud-logs/"
+Docker_nextcloud_log_http_file: "000-default.conf"
+Docker_nextcloud_log_https_file: "default-ssl.conf"
+nextcloud_user: www-data
+nextcloud_group: www-data
+
+
+
