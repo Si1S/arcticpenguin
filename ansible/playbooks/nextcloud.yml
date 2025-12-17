@@ -1,0 +1,9 @@
+- name: Create configuration files for Nextcloud in the docker host
+  hosts: nxc01
+  become: yes
+
+  roles:
+    - nextcloud_web
+    # nextcloud_ldap coming soon
+  
+ 
