@@ -10,5 +10,5 @@ Docker_nextcloud_conf_https_file: "default-ssl.conf"
 nextcloud_user: www-data
 nextcloud_group: www-data
 
-
-
+LDAP_Port: 636
+TLS_CACert_File: "/usr/local/share/ca-certificate/arcticpenguin-ca.crt"
