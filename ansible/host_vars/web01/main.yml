@@ -60,22 +60,16 @@ ufw_rules_outgoing:
       - "10.0.20.2"         # mad01
       - "10.0.20.3"         # mad02
 
-  - port: 22                # Git SSH to GitHub
-    to: "{{ github_git_ipv4_ranges }}"
-
-  - port: 443               # Cloudflare API
-    to: "{{ cloudflare_api_ipv4_ranges }}"
+  - port: 443
+    to: "{{ github_web_ipv4_ranges | union(cloudflare_api_ipv4_ranges) | list }}"
 
 ufw_rules_outgoing_ipv6:
   - port: 7844              # Cloudflare Tunnel
     proto: udp
     to: "{{ cloudflare_tunnel_ipv6_ranges }}"
 
-  - port: 443               # Cloudflare API
-    to: "{{ cloudflare_api_ipv6_ranges }}"
-
-  - port: 22                # Git SSH to GitHub
-    to: "{{ github_git_ipv6_ranges }}"
+  - port: 443
+    to: "{{ github_web_ipv6_ranges | union(cloudflare_api_ipv6_ranges) | list }}"
 
 ufw_outgoing_policy: deny
 
