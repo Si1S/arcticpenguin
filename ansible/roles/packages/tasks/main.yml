@@ -1,0 +1,30 @@
+---
+- name: Temporary UFW outbound for package managers
+  community.general.ufw:
+    rule: allow
+    port: "80,443"
+    proto: tcp
+    direction: out
+    comment: "TEMP PACKAGES"
+  register: ufw_packages_temp
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  changed_when: false
+
+- name: Install packages
+  ansible.builtin.apt:
+    name: "{{apt_packages | flatten }}"
+    state: present
+    install_recommends: false
+
+- name: Remove temporary UFW packages rule
+  community.general.ufw:
+    rule: delete
+    port: "80,443"
+    proto: tcp
+    direction: out
+    comment: "TEMP PACKAGES"
+  when: ufw_packages_temp.changed

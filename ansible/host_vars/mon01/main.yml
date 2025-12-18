@@ -35,6 +35,13 @@ ufw_rules:
       - "10.0.30.2"     # bas01
       - "10.0.10.0/24"  # users subnet
 
+apt_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-compose-plugin
+  - python3-bcrypt
+
 monitoring_user: monitoring
 monitoring_dir: /opt/monitoring
 monitoring_tmp_dir: /tmp/arcticpenguin
