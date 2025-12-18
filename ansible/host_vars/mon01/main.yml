@@ -36,8 +36,9 @@ ufw_rules:
       - "10.0.10.0/24"  # users subnet
 
 monitoring_user: monitoring
-monitoring_project_dir: /opt/monitoring
-monitoring_repo: "git@github.com:Si1S/arcticpenguin.git"
+monitoring_dir: /opt/monitoring
+monitoring_tmp_dir: /tmp/arcticpenguin
+monitoring_repo: "https://github.com/Si1S/arcticpenguin.git"
 monitoring_branch: main
 
 prometheus_external_url: "http://10.0.20.6:9090"
@@ -59,6 +60,12 @@ process_exporter_targets:
   - "10.0.20.4:9256"
   - "10.0.20.7:9256"
   - "10.0.20.9:9256"
+
+prometheus_rules_files:
+  - infra_cpu.yml
+  - infra_disk.yml
+  - infra_memory.yml
+  - infra_node.yml
 
 # CPU thresholds
 cpu_critical_threshold: 0.8
