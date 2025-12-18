@@ -1,16 +1,2 @@
-- name: Write the apache HTTP config file
-  ansible.builtin.template:
-    src: "{{ Docker_nextcloud_conf_http_file }}.j2"
-    dest: "{{ Docker_nextcloud_conf_path }}{{ Docker_nextcloud_conf_http_file }}"
-    owner: "{{ nextcloud_user }}"
-    group: "{{ nextcloud_group }}"
-    mode: '0640'
 
-- name: Write the apache HTTPS config file
-  ansible.builtin.template:
-    src: "{{ Docker_nextcloud_conf_https_file }}.j2"
-    dest: "{{ Docker_nextcloud_conf_path }}{{ Docker_nextcloud_conf_https_file }}"
-    owner: "{{ nextcloud_user }}"
-    group: "{{ nextcloud_group }}"
-    mode: '0640'
 
