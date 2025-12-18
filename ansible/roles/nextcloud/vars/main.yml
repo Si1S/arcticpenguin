@@ -1,14 +1,18 @@
 ---
 nextcloud_www_dir: /var/www/html
-Nextcloud_Server_Name: "nextcloud.arcticpenguin.local"
+Nextcloud_Server_Name: "nextcloud.{{netplan_search_domains}}"
 SSL_Certificate_File: "nextcloud.arcticpenguin.local.crt"
 SSL_CertificateKey_File: "nextcloud.arcticpenguin.local.key"
 
-Docker_nextcloud_conf_path: "/srv/nextcloud-conf/apache/"
+Docker_nextcloud_apache_conf_path: "/srv/nextcloud-conf/apache/"
 Docker_nextcloud_conf_http_file: "000-default.conf"
 Docker_nextcloud_conf_https_file: "default-ssl.conf"
 nextcloud_user: www-data
 nextcloud_group: www-data
+
+Docker_nextcloud_conf_path: "/srv/nextcloud-conf/"
+Docker_nextcloud_ldaps_conf_file: "ldap.conf"
+Docker_nextcloud_hosts_file: "hosts"
 
 LDAP_Port: 636
 TLS_CACert_File: "/usr/local/share/ca-certificate/arcticpenguin-ca.crt"

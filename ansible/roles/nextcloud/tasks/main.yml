@@ -14,3 +14,19 @@
     group: "{{ nextcloud_group }}"
     mode: '0640'
 
+- name: Write the ldaps config file for nextcloud container
+  ansible.builtin.template:
+    src: "{{ Docker_nextcloud_ldap_conf_file }}.j2"
+    dest: "{{ Docker_nextcloud_conf_path }}{{ Docker_nextcloud_ldaps_conf_file }}"
+    owner: "{{ nextcloud_user }}"
+    group: "{{ nextcloud_group }}"
+    mode: '0640'
+
+
+- name: Write the hosts file for nextcloud container
+  ansible.builtin.template:
+    src: "{{ Docker_nextcloud_hosts_file }}.j2"
+    dest: "{{ Docker_nextcloud_conf_path }}{{ Docker_nextcloud_hosts_file }}"
+    owner: "root"
+    group: "root"
+    mode: '0644'
