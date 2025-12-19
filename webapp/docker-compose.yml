@@ -1,4 +1,4 @@
-env_file:
+dotenv:
   - .env.docker
 
 services:
