@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sauve les Pingouins - ONG pour la protection des manchots{% endblock %}
+
+{% block body %}
+<section class="hero" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('images/pingouin-hero.jpg') }}'); background-size: cover; height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; color: white;">
+    <div>
+        <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">Sauvez les Pingouins !</h1>
+        <p style="font-size: 1.5rem; margin-bottom: 2rem;">Protégeons ces merveilles de l'Antarctique menacées par le réchauffement climatique.</p>
+        <a href="{{ path('app_donation') }}" class="btn btn-primary" style="background: #00b4d8; color: white; padding: 15px 30px; text-decoration: none; border-radius: 50px; font-size: 1.2rem; font-weight: bold;">Faire un don dès maintenant</a>
+    </div>
+</section>
+
+<section class="mission" style="padding: 80px 20px; background: #f8f9fa; text-align: center;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <h2 style="font-size: 2.5rem; color: #2c3e50; margin-bottom: 1.5rem;">Notre Mission</h2>
+        <p style="font-size: 1.2rem; color: #666; line-height: 1.8; max-width: 800px; margin: 0 auto 3rem;">
+            Depuis 2020, Sauve les Pingouins protège les manchots empereurs et Adélie face à la fonte des glaces. 
+            Nous finançons des expéditions scientifiques, des programmes de reproduction et luttons contre la pollution plastique.
+        </p>
+        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <h3 style="color: #00b4d8;">500+</h3>
+                <p>Pingouins sauvés</p>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <h3 style="color: #00b4d8;">15</h3>
+                <p>Expéditions</p>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <h3 style="color: #00b4d8;">98%</h3>
+                <p>Transparence dons</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="action" style="padding: 80px 20px; text-align: center; background: white;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 style="font-size: 2.5rem; color: #2c3e50; margin-bottom: 2rem;">Votre don change tout</h2>
+        <p style="font-size: 1.3rem; color: #666; margin-bottom: 3rem;">
+            10€ = 1 kg de plastique retiré des océans<br>
+            50€ = 1 semaine de nourriture pour 10 pingouins<br>
+            100€ = 1 capteur de suivi GPS
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ path('app_donation') }}" class="btn" style="background: #e74c3c; color: white; padding: 15px 25px; text-decoration: none; border-radius: 30px;">Don unique</a>
+            <a href="{{ path('app_adhesion') }}" class="btn" style="background: #27ae60; color: white; padding: 15px 25px; text-decoration: none; border-radius: 30px;">Devenir membre</a>
+        </div>
+    </div>
+</section>
+
+<footer style="background: #2c3e50; color: white; padding: 40px 20px; text-align: center;">
+    <p>&copy; 2025 Sauve les Pingouins - ONG enregistrée | <a href="{{ path('app_contact') }}" style="color: #00b4d8;">Contact</a> | <a href="{{ path('app_legal') }}" style="color: #00b4d8;">Mentions légales</a></p>
+</footer>
+{% endblock %}

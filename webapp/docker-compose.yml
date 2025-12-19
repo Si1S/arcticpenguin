@@ -1,0 +1,60 @@
+services:
+  php:
+    build: ./docker
+    restart: unless-stopped
+    volumes:
+      - /opt/webapp/symfony:/var/www/html
+    environment:
+      - APP_ENV=prod
+    depends_on:
+      - db
+    networks:
+      backend:
+        ipv4_address: 172.30.0.11
+      frontend:
+        ipv4_address: 172.20.0.11
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - /opt/webapp/symfony:/var/www/html:ro
+      - /srv/webconfig/nginx:/etc/nginx/conf.d:ro
+      - /srv/logs/nginx:/var/log/nginx
+    depends_on:
+      - php
+    networks:
+      frontend:
+        ipv4_address: 172.20.0.10
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - /opt/webapp/db_data:/var/lib/postgresql/data
+      - /opt/webapp/logs/postgresql:/var/lib/postgresql/data/log
+    networks:
+      backend:
+        ipv4_address: 172.30.0.10
+
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1

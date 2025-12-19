@@ -1,0 +1,33 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Administration - Membres{% endblock %}
+
+{% block intranet_body %}
+<div class="row">
+    <div class="col-12">
+        <h1>⚙️ Administration - Gestion Membres</h1>
+        <p class="lead">Ici vous pouvez gérer tous les membres de l'ONG.</p>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>👥 Liste des membres</h5>
+                        <p>Afficher tous les membres + statistiques</p>
+                        <a href="#" class="btn btn-primary">Voir la liste</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>➕ Ajouter admin</h5>
+                        <p>Promouvoir un membre en admin</p>
+                        <a href="#" class="btn btn-success">Promouvoir</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
