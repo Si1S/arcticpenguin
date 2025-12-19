@@ -1,3 +1,6 @@
+env_file:
+  - .env.docker
+
 services:
   php:
     build: ./docker
