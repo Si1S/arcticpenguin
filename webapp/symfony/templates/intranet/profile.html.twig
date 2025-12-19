@@ -1,0 +1,35 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block intranet_body %}
+<h1>Mon profil</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5>Informations personnelles</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Nom d'utilisateur</dt>
+                    <dd class="col-sm-8">{{ user.username }}</dd>
+                    
+                    <dt class="col-sm-4">Nom</dt>
+                    <dd class="col-sm-8">{{ user.nom }}</dd>
+                    
+                    <dt class="col-sm-4">Prénom</dt>
+                    <dd class="col-sm-8">{{ user.prenom }}</dd>
+                    
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">{{ user.email }}</dd>
+                    
+                    <dt class="col-sm-4">Téléphone</dt>
+                    <dd class="col-sm-8">{{ user.telephone }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

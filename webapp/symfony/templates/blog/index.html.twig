@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Articles du Blog{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Articles du Blog</h1>
+    
+    {% if articles is defined and articles|length > 0 %}
+        {% for article in articles %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ article.nom }} {{ article.prenom }}</h5>
+                <small>Publié le {{ article.dateCreation|date('d/m/Y') }}</small>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ article.contenu|nl2br }}</p>  {# <- contenu au lieu de texte #}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center">
+            <h4>Aucun article publié pour le moment.</h4>
+            <p>Revenez bientôt pour découvrir nos actualités !</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
