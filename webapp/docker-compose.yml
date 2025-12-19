@@ -31,6 +31,7 @@ services:
 
   db:
     image: postgres:16-alpine
+    user: "1002:1002"
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
