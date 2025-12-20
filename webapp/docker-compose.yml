@@ -31,7 +31,6 @@ services:
 
   db:
     image: postgres:16-alpine
-    user: "1002:1002"
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -40,8 +39,8 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
-      - /opt/webapp/db_data:/var/lib/postgresql/data
-      - /opt/webapp/logs/postgresql:/var/lib/postgresql/data/log
+      - /data/postgres/arctic/data:/var/lib/postgresql/data
+      - /data/postgres/arctic/logs:/var/lib/postgresql/data/log
     networks:
       backend:
         ipv4_address: 172.30.0.10
