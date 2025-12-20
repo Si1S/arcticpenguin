@@ -1,0 +1,30 @@
+---
+- name: restart webapp stack
+  become: true
+  become_user: "{{ webapp_user }}"
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ webapp_dir }}"
+
+- name: restart webapp php
+  become: true
+  become_user: "{{ webapp_user }}"
+  ansible.builtin.command:
+    cmd: docker compose restart php
+    chdir: "{{ webapp_dir }}"
+
+- name: restart webapp db
+  become: true
+  become_user: "{{ webapp_user }}"
+  ansible.builtin.command:
+    cmd: docker compose restart db
+    chdir: "{{ webapp_dir }}"
+
+- name: remove temp firewall rules
+  ansible.builtin.ufw:
+    rule: deny
+    port: '80,443'
+    proto: tcp
+    direction: out
+    comment: "TEMP webapp-composer-*"
+  listen: "remove temp firewall rules"

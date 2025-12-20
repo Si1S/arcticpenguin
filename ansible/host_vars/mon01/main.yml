@@ -45,7 +45,6 @@ apt_packages:
 monitoring_user: monitoring
 monitoring_dir: /opt/monitoring
 monitoring_tmp_dir: /tmp/arcticpenguin
-monitoring_repo: "https://github.com/Si1S/arcticpenguin.git"
 monitoring_branch: main
 
 prometheus_external_url: "http://10.0.20.6:9090"

@@ -10,8 +10,8 @@ extra_authorized_users:
  - cloudflared
  - node-exp
  - wazuh
- - webuser
- - dbuser
+ - webapp
+ - postgres-app
 
 ufw_rules:
   # Inbound rules
@@ -76,3 +76,10 @@ ufw_outgoing_policy: deny
 cloudflared_tunnel_token: "{{ vault_cloudflared_tunnel_token }}"
 cloudflared_hostname: arcticpenguin.org
 cloudflared_service_url: http://localhost:8080
+
+# Webapp vars
+webapp_user: "webapp"
+postgres_user: "postgres-app"
+webapp_dir: "/opt/webapp"
+webapp_tmp_dir: "/tmp/webapp"
+webapp_branch: "main"

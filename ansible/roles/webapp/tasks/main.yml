@@ -1,0 +1,134 @@
+---
+- name: Temporary firewall rules for Composer (outbound)
+  ansible.builtin.ufw:
+    rule: allow
+    port: '80,443'
+    proto: tcp
+    direction: out
+    comment: "TEMP webapp-composer-{{ ansible_date_time.epoch }}"
+  notify: remove temp firewall rules
+
+- name: Ensure webapp user exists
+  ansible.builtin.user:
+    name: "{{ webapp_user }}"
+    shell: /bin/bash
+    create_home: true
+    groups: docker
+    append: true
+
+- name: Ensure postgres-app user exists
+  ansible.builtin.user:
+    name: "{{ postgres_user }}"
+    shell: /bin/false
+    create_home: false
+    system: true
+
+- name: Ensure {{ webapp_dir }} directory exists
+  ansible.builtin.file:
+    path: "{{ webapp_dir }}"
+    state: directory
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_user }}"
+    mode: "0755"
+
+- name: Clone arcticpenguin repository to temp
+  ansible.builtin.git:
+    repo: "{{ arctic_repo }}"
+    dest: "{{ webapp_tmp_dir }}"
+    version: "{{ webapp_branch }}"
+    update: yes
+
+- name: Copy ONLY webapp/ folder to {{ webapp_dir }}
+  ansible.builtin.copy:
+    src: "{{ webapp_tmp_dir }}/webapp/"
+    dest: "{{ webapp_dir }}/"
+    remote_src: yes
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_user }}"
+  notify: restart webapp stack
+
+- name: Cleanup temporary arcticpenguin clone
+  ansible.builtin.file:
+    path: "{{ webapp_tmp_dir }}"
+    state: absent
+
+- name: Composer install dependencies
+  become: true
+  become_user: "{{ webapp_user }}"
+  ansible.builtin.command:
+    cmd: composer install --no-dev --optimize-autoloader --no-scripts
+    chdir: "{{ webapp_dir }}/symfony"
+  args:
+    creates: "{{ webapp_dir }}/symfony/vendor/autoload.php"
+  notify: restart webapp php
+
+- name: Ensure symfony var directory exists
+  ansible.builtin.file:
+    path: "{{ webapp_dir }}/symfony/var"
+    state: directory
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_user }}"
+    mode: "0755"
+
+- name: Ensure Symfony prod cache directory exists
+  ansible.builtin.file:
+    path: "{{ webapp_dir }}/symfony/var/cache/prod"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Ensure Symfony log directory exists
+  ansible.builtin.file:
+    path: "{{ webapp_dir }}/symfony/var/log"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Ensure nginx log directory exists
+  ansible.builtin.file:
+    path: "{{ webapp_dir }}logs/nginx"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0750"
+
+- name: Ensure Postgres base directory exists
+  ansible.builtin.file:
+    path: "/data/postgres/arctic"
+    state: directory
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_user }}"
+    mode: "0750"
+
+- name: Ensure DB data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ postgres_user }}"
+    group: "{{ postgres_user }}"
+    mode: "0700"
+  loop:
+    - "/data/postgres/arctic/data"
+    - "/data/postgres/arctic/logs"
+  notify: restart webapp db
+
+- name: Render docker-compose .env
+  ansible.builtin.template:
+    src: webapp.env.j2
+    dest: "{{ webapp_dir }}/.env"
+    mode: "0640"
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_user }}"
+
+- name: Render Symfony .env.local
+  ansible.builtin.template:
+    src: symfony.env.j2
+    dest: "{{ webapp_dir }}/symfony/.env"
+    mode: "0644"
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_user }}"
+  notify: restart webapp php
+
+- meta: flush_handlers
