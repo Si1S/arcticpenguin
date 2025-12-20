@@ -1,0 +1,31 @@
+---
+# Users
+webapp_user: webapp
+postgres_user: postgres-app
+
+# Paths
+webapp_dir: /opt/webapp
+webapp_tmp_dir: /tmp/arcticpenguin-webapp
+
+# Repo
+webapp_version: "main"
+
+# Runtime users
+webapp_www_user: www-data
+webapp_www_group: www-data
+
+# Firewall temp rule around composer
+webapp_use_ufw_temp_rules: true
+webapp_temp_egress_ports: "80,443"
+webapp_temp_egress_proto: tcp
+webapp_temp_ufw_comment: "TEMP webapp-composer"
+
+# Composer
+webapp_run_composer: true
+webapp_composer_workdir: "{{ webapp_dir }}/symfony"
+
+# Postgres host directories
+webapp_pg_base_dir: /data/postgres/arctic
+webapp_pg_dirs:
+  - "{{ webapp_pg_base_dir }}/data"
+  - "{{ webapp_pg_base_dir }}/logs"
