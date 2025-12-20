@@ -1,0 +1,6 @@
+---
+- name: Deploy webapp stack
+  hosts: web01
+  become: true
+  roles:
+    - webapp
