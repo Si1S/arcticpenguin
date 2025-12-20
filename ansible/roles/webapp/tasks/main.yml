@@ -1,20 +1,10 @@
 ---
-- name: Temporary firewall rules for Composer (outbound)
-  ansible.builtin.ufw:
-    rule: allow
-    port: '80,443'
-    proto: tcp
-    direction: out
-    comment: "TEMP webapp-composer-{{ ansible_date_time.epoch }}"
-  notify: remove temp firewall rules
-
 - name: Ensure webapp user exists
   ansible.builtin.user:
     name: "{{ webapp_user }}"
     shell: /bin/bash
     create_home: true
-    groups: docker
-    append: true
+  tags: ['webapp', 'users']
 
 - name: Ensure postgres-app user exists
   ansible.builtin.user:
@@ -22,6 +12,7 @@
     shell: /bin/false
     create_home: false
     system: true
+  tags: ['webapp', 'users']
 
 - name: Ensure {{ webapp_dir }} directory exists
   ansible.builtin.file:
@@ -30,77 +21,87 @@
     owner: "{{ webapp_user }}"
     group: "{{ webapp_user }}"
     mode: "0755"
+  tags: ['webapp', 'fs']
 
-- name: Clone arcticpenguin repository to temp
+- name: Clone repository to temp
   ansible.builtin.git:
     repo: "{{ arctic_repo }}"
     dest: "{{ webapp_tmp_dir }}"
-    version: "{{ webapp_branch }}"
-    update: yes
+    version: "{{ webapp_version }}"
+    update: true
+    depth: 1
+    single_branch: true
+  tags: ['webapp', 'deploy']
 
 - name: Copy ONLY webapp/ folder to {{ webapp_dir }}
   ansible.builtin.copy:
     src: "{{ webapp_tmp_dir }}/webapp/"
     dest: "{{ webapp_dir }}/"
-    remote_src: yes
+    remote_src: true
     owner: "{{ webapp_user }}"
     group: "{{ webapp_user }}"
+    mode: preserve
   notify: restart webapp stack
+  tags: ['webapp', 'deploy']
 
-- name: Cleanup temporary arcticpenguin clone
+- name: Cleanup temporary clone
   ansible.builtin.file:
     path: "{{ webapp_tmp_dir }}"
     state: absent
+  tags: ['webapp', 'deploy']
 
-- name: Composer install dependencies
-  become: true
-  become_user: "{{ webapp_user }}"
-  ansible.builtin.command:
-    cmd: composer install --no-dev --optimize-autoloader --no-scripts
-    chdir: "{{ webapp_dir }}/symfony"
-  args:
-    creates: "{{ webapp_dir }}/symfony/vendor/autoload.php"
-  notify: restart webapp php
-
-- name: Ensure symfony var directory exists
-  ansible.builtin.file:
-    path: "{{ webapp_dir }}/symfony/var"
-    state: directory
+- name: Render docker-compose .env
+  no_log: true
+  ansible.builtin.template:
+    src: webapp.env.j2
+    dest: "{{ webapp_dir }}/.env"
+    mode: "0640"
     owner: "{{ webapp_user }}"
     group: "{{ webapp_user }}"
-    mode: "0755"
+  notify: restart webapp stack
+  tags: ['webapp', 'config']
 
-- name: Ensure Symfony prod cache directory exists
-  ansible.builtin.file:
-    path: "{{ webapp_dir }}/symfony/var/cache/prod"
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: "0755"
+- name: Render Symfony .env (local)
+  no_log: true
+  ansible.builtin.template:
+    src: symfony.env.j2
+    dest: "{{ webapp_dir }}/symfony/.env"
+    mode: "0644"
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_user }}"
+  notify: restart webapp php
+  tags: ['webapp', 'config']
 
-- name: Ensure Symfony log directory exists
+- name: Ensure Symfony writable directories exist
   ansible.builtin.file:
-    path: "{{ webapp_dir }}/symfony/var/log"
+    path: "{{ item.path }}"
     state: directory
-    owner: www-data
-    group: www-data
-    mode: "0755"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ webapp_dir }}/symfony/var",            owner: "{{ webapp_user }}",    group: "{{ webapp_user }}",    mode: "0755" }
+    - { path: "{{ webapp_dir }}/symfony/var/cache/prod", owner: "{{ webapp_www_user }}", group: "{{ webapp_www_group }}", mode: "0755" }
+    - { path: "{{ webapp_dir }}/symfony/var/log",        owner: "{{ webapp_www_user }}", group: "{{ webapp_www_group }}", mode: "0755" }
+  tags: ['webapp', 'fs']
 
 - name: Ensure nginx log directory exists
   ansible.builtin.file:
-    path: "{{ webapp_dir }}logs/nginx"
+    path: "{{ webapp_dir }}/logs/nginx"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ webapp_www_user }}"
+    group: "{{ webapp_www_group }}"
     mode: "0750"
+  tags: ['webapp', 'fs']
 
 - name: Ensure Postgres base directory exists
   ansible.builtin.file:
-    path: "/data/postgres/arctic"
+    path: "{{ webapp_pg_base_dir }}"
     state: directory
     owner: "{{ postgres_user }}"
     group: "{{ postgres_user }}"
     mode: "0750"
+  tags: ['webapp', 'db', 'fs']
 
 - name: Ensure DB data directories exist
   ansible.builtin.file:
@@ -109,26 +110,52 @@
     owner: "{{ postgres_user }}"
     group: "{{ postgres_user }}"
     mode: "0700"
-  loop:
-    - "/data/postgres/arctic/data"
-    - "/data/postgres/arctic/logs"
+  loop: "{{ webapp_pg_dirs }}"
   notify: restart webapp db
+  tags: ['webapp', 'db', 'fs']
 
-- name: Render docker-compose .env
-  ansible.builtin.template:
-    src: webapp.env.j2
-    dest: "{{ webapp_dir }}/.env"
-    mode: "0640"
-    owner: "{{ webapp_user }}"
-    group: "{{ webapp_user }}"
+- name: Composer install (with temporary outbound rule)
+  when: webapp_run_composer | bool
+  tags: ['webapp', 'composer']
+  block:
+    - name: Check if Composer vendor autoload exists
+      ansible.builtin.stat:
+        path: "{{ webapp_dir }}/symfony/vendor/autoload.php"
+      register: composer_vendor
 
-- name: Render Symfony .env.local
-  ansible.builtin.template:
-    src: symfony.env.j2
-    dest: "{{ webapp_dir }}/symfony/.env"
-    mode: "0644"
-    owner: "{{ webapp_user }}"
-    group: "{{ webapp_user }}"
-  notify: restart webapp php
+    - name: Temporarily allow HTTP/HTTPS outbound for Composer
+      when:
+        - webapp_use_ufw_temp_rules | bool
+        - not composer_vendor.stat.exists
+      community.general.ufw:
+        rule: allow
+        direction: out
+        proto: "{{ webapp_temp_egress_proto }}"
+        port: "{{ webapp_temp_egress_ports }}"
+        comment: "{{ webapp_temp_ufw_comment }}"
 
-- meta: flush_handlers
+    - name: Install PHP dependencies with Composer (only if missing)
+      when: not composer_vendor.stat.exists
+      become: true
+      become_user: "{{ webapp_user }}"
+      community.general.composer:
+        command: install
+        working_dir: "{{ webapp_composer_workdir }}"
+        no_dev: true
+        optimize_autoloader: true
+        no_scripts: true
+      notify: restart webapp php
+
+  always:
+    - name: Remove temporary outbound rule for Composer
+      when:
+        - webapp_use_ufw_temp_rules | bool
+        - not composer_vendor.stat.exists
+      community.general.ufw:
+        rule: allow
+        direction: out
+        proto: "{{ webapp_temp_egress_proto }}"
+        port: "{{ webapp_temp_egress_ports }}"
+        comment: "{{ webapp_temp_ufw_comment }}"
+        delete: true
+
