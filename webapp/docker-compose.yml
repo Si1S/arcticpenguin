@@ -21,8 +21,9 @@ services:
       - "127.0.0.1:8080:80"
     volumes:
       - /opt/webapp/symfony:/var/www/html:ro
-      - /srv/webconfig/nginx:/etc/nginx/conf.d:ro
-      - /srv/logs/nginx:/var/log/nginx
+      - /opt/webapp/docker/nginx/etc/nginx/conf.d:ro
+      - /opt/webapp/docker/nginx/cloudflare-realip.conf:/etc/nginx/conf.d/cloudflare-realip.conf:ro
+      - /opt/webapp/logs/nginx:/var/log/nginx
     depends_on:
       - php
     networks:
