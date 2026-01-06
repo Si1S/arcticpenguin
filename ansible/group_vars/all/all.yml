@@ -10,4 +10,4 @@ netplan_search_domains:
   - arcticpenguin.local
 
 AD_Base_DN: "dc=arcticpenguin,dc=local"
-AD_Domain_Name: "mad01.{{ netplan_search_domains }}"
+AD_Domain_Name: "mad01.arcticpenguin.local"

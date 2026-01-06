@@ -1,6 +1,6 @@
 ---
 nextcloud_www_dir: /var/www/html
-Nextcloud_Server_Name: "nextcloud.{{netplan_search_domains}}"
+Nextcloud_Server_Name: "nextcloud.arcticpenguin.local"
 SSL_Certificate_File: "nextcloud.arcticpenguin.local.crt"
 SSL_CertificateKey_File: "nextcloud.arcticpenguin.local.key"
 
