@@ -1,2 +1,63 @@
 ---
-ssh_allow_users: []
+# Ubuntu/Debian default service name
+ssh_hardening_sshd_service_name: "ssh"
+
+# Manage service state
+ssh_hardening_manage_service: true
+ssh_hardening_service_enabled: true
+ssh_hardening_service_state: "started"
+
+# Remove drop-in directory
+ssh_hardening_remove_dropin_dir: true
+
+# sshd_config managed settings
+ssh_hardening_port: 22
+ssh_hardening_address_family: "any"
+
+# Logging
+ssh_hardening_syslog_facility: "AUTH"
+ssh_hardening_log_level: "VERBOSE"
+
+# Connection/auth limits
+ssh_hardening_login_grace_time: "30"
+ssh_hardening_max_auth_tries: "3"
+ssh_hardening_max_sessions: "2"
+ssh_hardening_max_startups: "10:30:60"
+
+# Root
+ssh_hardening_permit_root_login: "no"
+
+# Authentication
+ssh_hardening_pubkey_authentication: "yes"
+ssh_hardening_authentication_methods: "publickey"
+ssh_hardening_authorized_keys_file: ".ssh/authorized_keys"
+
+ssh_hardening_password_authentication: "no"
+ssh_hardening_kbd_interactive_authentication: "no"
+ssh_hardening_permit_empty_passwords: "no"
+
+# PAM
+ssh_hardening_use_pam: "yes"
+
+# Reduce attack surface
+ssh_hardening_x11_forwarding: "no"
+ssh_hardening_allow_agent_forwarding: "no"
+ssh_hardening_allow_tcp_forwarding: "no"
+ssh_hardening_allow_streamlocal_forwarding: "no"
+ssh_hardening_permit_tunnel: "no"
+
+# Keepalives
+ssh_hardening_client_alive_interval: "300"
+ssh_hardening_client_alive_count_max: "2"
+
+# Environment variables
+ssh_hardening_accept_env:
+  - "LANG"
+  - "LC_*"
+
+# SFTP
+ssh_hardening_subsystem_sftp: "internal-sftp"
+
+# AllowGroups
+ssh_hardening_allow_groups:
+  - "sudo"
