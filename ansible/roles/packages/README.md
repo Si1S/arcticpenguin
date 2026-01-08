@@ -1,4 +1,4 @@
-# Rôle — packages
+# Rôle - packages
 
 Installe des paquets APT depuis `apt_packages` (avec option de règle UFW sortante temporaire 80/443).
 

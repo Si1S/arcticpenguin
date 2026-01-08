@@ -1,4 +1,4 @@
-# Rôle — users
+# Rôle - users
 
 Gère les comptes locaux (création, clés SSH, sudo) et peut supprimer les comptes non autorisés (UID >= 1000).
 

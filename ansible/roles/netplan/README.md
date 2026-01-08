@@ -1,4 +1,4 @@
-# Rôle — netplan
+# Rôle - netplan
 
 Génère `/etc/netplan/01-config.yaml` et applique la configuration réseau.
 

@@ -1,4 +1,4 @@
-# Rôle — easy_rsa
+# Rôle - easy_rsa
 
 Easy-RSA est un utilitaire en ligne de commande qui permet de créer et gérer une PKI (infrastructure à clés publiques), notamment en mettant en place une **autorité de certification** (CA) et en signant des certificats.
 

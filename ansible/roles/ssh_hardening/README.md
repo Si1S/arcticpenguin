@@ -1,4 +1,4 @@
-# Rôle — ssh_hardening
+# Rôle - ssh_hardening
 
 Déploie une configuration `sshd` durcie depuis template et redémarre le service SSH.
 

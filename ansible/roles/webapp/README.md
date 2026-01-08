@@ -1,4 +1,4 @@
-# Rôle — webapp
+# Rôle - webapp
 
 Ce rôle déploie une application Symfony packagée en Docker Compose (PHP-FPM + Nginx + PostgreSQL) en récupérant le dossier `webapp/` depuis le dépôt GitHub, puis en générant les fichiers `.env` nécessaires et en (re)lançant la stack.
 
