@@ -1,0 +1,29 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Modifier Article #{{ article.id }}{% endblock %}
+
+{% block intranet_body %}
+<div class="container mt-4">
+    <h1>✏️ Modifier Article #{{ article.id }}</h1>
+    
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_row(form.nom, {attr: {'class': 'form-control'}}) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.prenom, {attr: {'class': 'form-control'}}) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.dateCreation, {attr: {'class': 'form-control'}}) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.contenu, {attr: {'class': 'form-control', 'rows': 10}}) }}
+        </div>
+        
+	<div class="d-flex gap-2">
+    		<button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+    		<a href="{{ path('app_admin_article_index') }}" class="btn btn-secondary">Retour à la liste</a>
+	</div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

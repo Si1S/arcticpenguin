@@ -1,0 +1,44 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block intranet_body %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-5">
+            <h1 class="display-4">Bienvenue dans l'intranet ! 🐧</h1>
+            <p class="lead">Espace réservé aux membres de Sauve les Pingouins.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100 shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">📊 Dashboard</h5>
+                <p class="card-text">Suivez vos dons et l'impact de votre engagement.</p>
+                <a href="{{ path('app_dashboard') }}" class="btn btn-primary">Accéder</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">👤 Mon profil</h5>
+                <p class="card-text">Gérez vos informations personnelles.</p>
+                <a href="{{ path('app_profile') }}" class="btn btn-success">Voir</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">📧 Notifications</h5>
+                <p class="card-text">À venir : alertes expéditions pingouins.</p>
+                <a href="#" class="btn btn-info disabled">Bientôt</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

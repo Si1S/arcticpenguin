@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Intranet - {{ block('title') }}{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ path('app_intranet') }}">🔐 Intranet Sauve les Pingouins</a>
+        <div class="navbar-nav">
+        <a class="nav-link" href="{{ path('app_intranet') }}">Accueil</a>
+        <a class="nav-link" href="{{ path('app_dashboard') }}">Dashboard</a>
+        <a class="nav-link" href="{{ path('app_profile') }}">Mon profil</a>
+    </div>
+        <div class="navbar-nav ms-auto">
+            <span class="navbar-text me-3">
+                Bonjour, {{ app.user.username }} !
+            </span>
+            <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'success' ? 'success' : 'danger' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {% block intranet_body %}{% endblock %}
+</div>
+{% endblock %}

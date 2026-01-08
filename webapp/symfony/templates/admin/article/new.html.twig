@@ -1,0 +1,18 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Créer un nouvel article{% endblock %}
+
+{% block intranet_body %}
+<div class="container mt-4">
+    <h1>Créer un nouvel article</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.contenu) }}
+
+        <button class="btn btn-success mt-3">Créer</button>
+        <a href="{{ path('app_admin_article_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+---
+- name: restart prometheus
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.shell: docker compose restart prometheus
+  args:
+    chdir: "{{ monitoring_dir }}"
+  failed_when: false
+  changed_when: true
+
+- name: restart blackbox-exporter
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.shell: docker compose restart blackbox_exporter
+  args:
+    chdir: "{{ monitoring_dir }}"
+  failed_when: false
+  changed_when: true
+
+- name: restart alertmanager
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.shell: docker compose restart alertmanager
+  args:
+    chdir: "{{ monitoring_dir }}"
+  failed_when: false
+  changed_when: true
+
+- name: restart monitoring stack
+  become: true
+  become_user: "{{ monitoring_user }}"
+  ansible.builtin.shell: docker compose up -d
+  args:
+    chdir: "{{ monitoring_dir }}"
+  changed_when: true

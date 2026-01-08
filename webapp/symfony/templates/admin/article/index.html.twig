@@ -1,0 +1,58 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Gestion Articles{% endblock %}
+
+{% block intranet_body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📝 Gestion des Articles</h1>
+        <a href="{{ path('app_admin_article_new') }}" class="btn btn-success">
+            ➕ Nouvel article
+        </a>
+    </div>
+
+    {% if articles|length > 0 %}
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted">{{ articles|length }} article(s) au total</p>
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Titre/Auteur</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+			<tbody>
+    {% for article in articles %}
+    <tr>
+        <td>{{ article.id }}</td>
+        <td>
+            <strong>{{ article.nom }} {{ article.prenom }}</strong><br>
+            <small>{{ article.contenu|slice(0,100) ~ '...' }}</small>
+        </td>
+        <td>{{ article.dateCreation ? article.dateCreation|date('d/m/Y H:i') : 'Non définie' }}</td>
+        <td>
+            <a href="{{ path('app_admin_article_edit', {'id': article.id}) }}" class="btn btn-sm btn-primary">Modifier</a>
+
+            <form method="post" action="{{ path('app_admin_article_delete', {'id': article.id}) }}" 
+                  onsubmit="return confirm('Supprimer cet article ?');" style="display:inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                <button class="btn btn-sm btn-danger" type="submit">Supprimer</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <h4>Aucun article</h4>
+            <p><a href="{{ path('app_admin_article_new') }}" class="btn btn-success btn-lg">Créez le premier article !</a></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

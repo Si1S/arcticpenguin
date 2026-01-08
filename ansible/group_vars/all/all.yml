@@ -11,3 +11,4 @@ netplan_search_domains:
 
 AD_Base_DN: "dc=arcticpenguin,dc=local"
 AD_Domain_Name: "mad01.arcticpenguin.local"
+arctic_repo: "https://github.com/Si1S/arcticpenguin.git"

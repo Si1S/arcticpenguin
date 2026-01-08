@@ -10,7 +10,11 @@
       tags: ['common', 'ssh']
     - role: netplan
       tags: ['common', 'network']
-    - role: node_exporter
-      tags: ['monitoring']
     - role: ufw_firewall
       tags: ['security', 'firewall']
+    - role: packages
+      tags: ['common', 'packages']
+    - role: node_exporter
+      tags: ['monitoring']
+    - role: process_exporter
+      tags: ['monitoring']

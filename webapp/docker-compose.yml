@@ -1,0 +1,61 @@
+services:
+  php:
+    build: ./docker
+    restart: unless-stopped
+    volumes:
+      - /opt/webapp/symfony:/var/www/html
+    environment:
+      - APP_ENV=prod
+    depends_on:
+      - db
+    networks:
+      backend:
+        ipv4_address: 172.30.0.11
+      frontend:
+        ipv4_address: 172.20.0.11
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - /opt/webapp/symfony:/var/www/html:ro
+      - /opt/webapp/docker/nginx:/etc/nginx/conf.d:ro
+      - /opt/webapp/docker/nginx/cloudflare-realip.conf:/etc/nginx/conf.d/cloudflare-realip.conf:ro
+      - /opt/webapp/logs/nginx:/var/log/nginx
+    depends_on:
+      - php
+    networks:
+      frontend:
+        ipv4_address: 172.20.0.10
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - /data/postgres/arctic/data:/var/lib/postgresql/data
+      - /data/postgres/arctic/logs:/var/lib/postgresql/data/log
+    networks:
+      backend:
+        ipv4_address: 172.30.0.10
+
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1

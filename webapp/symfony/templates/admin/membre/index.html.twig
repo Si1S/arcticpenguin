@@ -1,0 +1,93 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Gestion Membres{% endblock %}
+
+{% block intranet_body %}
+<div class="container my-4">
+    <h1 class="mb-4">Gestion des membres</h1>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="h4">Liste des membres</h2>
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Rôles</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for membre in membres %}
+                    <tr>
+                        <td>{{ membre.id }}</td>
+                        <td>{{ membre.nom }}</td>
+                        <td>{{ membre.prenom }}</td>
+                        <td>{{ membre.email }}</td>
+                        <td>
+                            {% for role in membre.roles %}
+                                <span class="badge bg-secondary">{{ role }}</span>
+                            {% else %}
+                                <span class="text-muted">Aucun rôle</span>
+                            {% endfor %}
+                        </td>
+                        <td class="d-flex gap-1">
+                            <a href="{{ path('app_admin_membre_index', {id: membre.id}) }}" class="btn btn-sm btn-outline-primary">
+                                Modifier les rôles
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{{ path('app_admin_membre_delete', {id: membre.id}) }}"
+                                onsubmit="return confirm('Supprimer définitivement ce membre ?');"
+                            >
+                                <input type="hidden" name="token" value="{{ csrf_token('delete_membre') }}">
+                                <button class="btn btn-sm btn-outline-danger">
+                                    Supprimer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Aucun membre trouvé.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-4">
+            <h2 class="h4">Édition des rôles</h2>
+
+            {% if membreSelectionne and form is defined and form is not null %}
+                <p class="mb-2">
+                    Membre sélectionné :
+                    <strong>{{ membreSelectionne.prenom }} {{ membreSelectionne.nom }}</strong><br>
+                    <small class="text-muted">{{ membreSelectionne.email }}</small>
+                </p>
+
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                {{ form_end(form) }}
+            {% else %}
+                <p class="text-muted">
+                    Sélectionnez un membre dans la liste pour modifier ses rôles.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

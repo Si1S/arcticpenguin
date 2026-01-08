@@ -1,0 +1,22 @@
+---
+- name: restart webapp stack
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ webapp_dir }}"
+    state: present
+
+- name: restart webapp php
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ webapp_dir }}"
+    services:
+      - php
+    state: restarted
+
+- name: restart webapp db
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ webapp_dir }}"
+    services:
+      - db
+    state: restarted

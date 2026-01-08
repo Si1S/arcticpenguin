@@ -1,0 +1,51 @@
+{% extends 'intranet/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block intranet_body %}
+<h1>Dashboard membre</h1>
+
+<div class="row">
+    <!-- Infos membre de base -->
+    <div class="col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                <h5>Vos informations</h5>
+                <p><strong>Nom :</strong> {{ app.user.nom }} {{ app.user.prenom }}</p>
+                <p><strong>Email :</strong> {{ app.user.email }}</p>
+                <p><strong>Rôle :</strong> {{ app.user.roles[0] ?? 'Membre' }}</p>
+            </div>
+        </div>
+    </div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <!-- ✅ SECTION ADMIN UNIQUEMENT -->
+    <div class="col-md-6">
+        <div class="card bg-danger text-white mb-4">
+            <div class="card-body">
+                <h5>🚨 PANEL ADMINISTRATEUR</h5>
+                <a href="{{ path('app_admin_membre_index') }}" class="btn btn-warning w-100 mb-2">Gestion Membres</a>
+                <a href="{{ path('app_admin_articles') }}" class="btn btn-warning w-100">Gestion Articles</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if is_granted('ROLE_ADMIN') %}
+<!-- ✅ LIENS ADMIN SUPPLÉMENTAIRES -->
+<div class="row mt-4">
+    <div class="col-12">
+        <h3>Actions administrateur</h3>
+        <div class="list-group">
+            <a href="{{ path('app_admin_membre_index') }}" class="list-group-item list-group-item-action">
+                👥 Liste & Gestion des membres
+            </a>
+            <a href="{{ path('app_admin_articles') }}" class="list-group-item list-group-item-action">
+                ✍️ Gérer les articles du blog
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
