@@ -1,4 +1,4 @@
-# Rôle — process_exporter
+# Rôle - process_exporter
 
 Installe Process Exporter (package .deb) et démarre le service systemd.
 

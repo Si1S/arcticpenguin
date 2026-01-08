@@ -1,4 +1,4 @@
-# Rôle — nextcloud
+# Rôle - nextcloud
 
 Prépare les fichiers de configuration Apache (HTTP/HTTPS) et LDAPS pour un déploiement Nextcloud en conteneur.
 

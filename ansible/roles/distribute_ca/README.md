@@ -1,4 +1,4 @@
-# Rôle — distribute_ca
+# Rôle - distribute_ca
 
 Ce rôle distribue et installe le certificat racine de la PKI (le fichier `ca.crt`) dans le magasin de certificats **système** des hôtes Linux, afin que les services et clients de la machine fassent confiance aux certificats émis par l'autorité de certification.
 

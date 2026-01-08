@@ -1,4 +1,4 @@
-# Rôle — ufw_firewall
+# Rôle - ufw_firewall
 
 Applique la politique firewall via UFW.
 

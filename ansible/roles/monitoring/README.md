@@ -1,4 +1,4 @@
-# Rôle — monitoring
+# Rôle - monitoring
 
 Ce rôle déploie une stack de supervision basée sur Docker Compose (Prometheus, Grafana, Alertmanager, Blackbox Exporter et cAdvisor) en récupérant la configuration depuis le dépôt GitHub, puis en rendant les fichiers (templates) nécessaires avant de lancer/redémarrer les services.
 

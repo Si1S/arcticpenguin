@@ -1,4 +1,4 @@
-# Rôle — node_exporter
+# Rôle - node_exporter
 
 Installe Prometheus Node Exporter (binaire + service systemd).
 

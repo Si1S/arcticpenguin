@@ -1,4 +1,4 @@
-# Rôle — easy_rsa_certs
+# Rôle - easy_rsa_certs
 
 Génère des certificats LDAPS (DC) et des certificats internes (Nextcloud et Wazuh) via Easy-RSA.
 

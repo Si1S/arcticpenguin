@@ -1,4 +1,4 @@
-# Rôle — host
+# Rôle - host
 
 Configure le hostname et met à jour `/etc/hosts` pour cohérence locale.
 
