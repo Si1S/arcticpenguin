@@ -1,0 +1,8 @@
+URI ldaps://{{ AD_Domain_Name }}:{{ LDAP_Port }}
+BASE {{ AD_Base_DN }}
+TLS_CACERT {{ TLS_CACert_File }}
+TLS_REQCERT demand
+
+
+TIMELIMIT 15
+caBIND_TIMELIMIT 5
