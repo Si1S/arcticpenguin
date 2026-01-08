@@ -1,0 +1,40 @@
+# Managed by Ansible - DO NOT EDIT
+
+Port {{ ssh_hardening_port }}
+AddressFamily {{ ssh_hardening_address_family }}
+
+SyslogFacility {{ ssh_hardening_syslog_facility }}
+LogLevel {{ ssh_hardening_log_level }}
+
+LoginGraceTime {{ ssh_hardening_login_grace_time }}
+MaxAuthTries {{ ssh_hardening_max_auth_tries }}
+MaxSessions {{ ssh_hardening_max_sessions }}
+MaxStartups {{ ssh_hardening_max_startups }}
+
+PermitRootLogin {{ ssh_hardening_permit_root_login }}
+
+PubkeyAuthentication {{ ssh_hardening_pubkey_authentication }}
+AuthenticationMethods {{ ssh_hardening_authentication_methods }}
+AuthorizedKeysFile {{ ssh_hardening_authorized_keys_file }}
+
+PasswordAuthentication {{ ssh_hardening_password_authentication }}
+KbdInteractiveAuthentication {{ ssh_hardening_kbd_interactive_authentication }}
+PermitEmptyPasswords {{ ssh_hardening_permit_empty_passwords }}
+UsePAM {{ ssh_hardening_use_pam }}
+
+X11Forwarding {{ ssh_hardening_x11_forwarding }}
+AllowAgentForwarding {{ ssh_hardening_allow_agent_forwarding }}
+AllowTcpForwarding {{ ssh_hardening_allow_tcp_forwarding }}
+AllowStreamLocalForwarding {{ ssh_hardening_allow_streamlocal_forwarding }}
+PermitTunnel {{ ssh_hardening_permit_tunnel }}
+
+ClientAliveInterval {{ ssh_hardening_client_alive_interval }}
+ClientAliveCountMax {{ ssh_hardening_client_alive_count_max }}
+
+AcceptEnv {{ ssh_hardening_accept_env | join(' ') }}
+
+Subsystem sftp {{ ssh_hardening_subsystem_sftp }}
+
+{% if ssh_hardening_allow_groups | length > 0 -%}
+AllowGroups {{ ssh_hardening_allow_groups | join(' ') }}
+{% endif -%}
