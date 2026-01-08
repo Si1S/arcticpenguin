@@ -9,7 +9,7 @@ Ce rôle déploie une application Symfony packagée en Docker Compose (PHP-FPM +
 - Rend les fichiers de configuration :
   - `.env` (Docker Compose) depuis `webapp.env.j2` avec les variables DB.
   - `symfony.env` depuis `symfony.env.j2` avec `APP_SECRET` et `DATABASE_URL` (secrets via Vault).
-- Optionnel : exécute `composer install` (seulement si `vendor/autoload.php` est absent) avec une règle UFW sortante temporaire 80/443 si `webappuseufwtemprules=true`.
+- Optionnel : exécute `composer install` (seulement si `vendor/autoload.php` est absent) avec une règle UFW sortante temporaire 80/443.
 - Démarre/redémarre la stack via `community.docker.docker_compose_v2` et peut redémarrer des services ciblés (`php`, `db`).
 
 ## Stack applicative (Docker Compose)
