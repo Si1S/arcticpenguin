@@ -1,7 +1,4 @@
 # Nextcloud
-
-![Nextcloud Logo](https://nextcloud.com/wp-content/themes/next/assets/img/common/logo_nextcloud_blue.svg)
-
 ## À propos de Nextcloud
 
 Nextcloud est une plateforme de stockage et de partage de fichiers auto-hébergée. Elle permet la synchronisation de fichiers, le partage sécurisé, la gestion de calendriers et de contacts, ainsi que la collaboration en temps réel. Avec son écosystème d'applications extensible et son accent sur la confidentialité, Nextcloud offre un contrôle total sur vos données personnelles et professionnelles.
