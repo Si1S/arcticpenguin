@@ -1,0 +1,17 @@
+name: Semgrep (SAST)
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep OSS scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/security-audit,p/php,p/docker,p/ansible
