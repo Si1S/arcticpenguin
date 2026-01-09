@@ -1,8 +1,8 @@
 name: Full Security Scan
 on:
+  pull_request:
   push:
     branches: [ "main" ]
-  pull_request:
 
 permissions:
   contents: read
@@ -11,8 +11,8 @@ permissions:
 
 jobs:
   trufflehog:
-    uses: ./.github/workflows/security/trufflehog.yml
+    uses: ./.github/workflows/security-trufflehog.yml
   trivy:
-    uses: ./.github/workflows/security/trivy.yml
+    uses: ./.github/workflows/security-trivy.yml
   semgrep:
-    uses: ./.github/workflows/security/semgrep.yml
+    uses: ./.github/workflows/security-semgrep.yml
