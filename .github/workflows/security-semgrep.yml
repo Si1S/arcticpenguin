@@ -1,17 +1,35 @@
-name: Semgrep (SAST)
+name: Semgrep (OSS SARIF)
 on:
   workflow_call:
 
 permissions:
   contents: read
+  security-events: write
+  actions: read
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Semgrep OSS scan
-        uses: semgrep/semgrep-action@v1
+      - name: Run Semgrep (SARIF)
+        run: |
+          python -m pip install --upgrade pip
+          pip install semgrep
+          semgrep scan \
+            --config p/security-audit \
+            --config p/php \
+            --config p/docker \
+            --config p/ansible \
+            --sarif --sarif-output=semgrep.sarif \
+            .
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
         with:
-          config: p/security-audit,p/php,p/docker,p/ansible
+          sarif_file: semgrep.sarif
+          category: semgrep
