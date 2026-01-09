@@ -1,11 +1,11 @@
-- name: Trivy fs scan
-  uses: aquasecurity/trivy-action@master
-  with:
-    scan-type: fs
-    scan-ref: .
-    format: sarif
-    output: trivy-results.sarif
-    severity: CRITICAL,HIGH,MEDIUM
-    ignore-unfixed: true
-    scanners: vuln,misconfig,secret
-  continue-on-error: true
+name: Trivy fs scan
+uses: aquasecurity/trivy-action@master
+with:
+  scan-type: fs
+  scan-ref: .
+  format: sarif
+  output: trivy-results.sarif
+  severity: CRITICAL,HIGH,MEDIUM
+  ignore-unfixed: true
+  scanners: vuln,misconfig,secret
+continue-on-error: true
