@@ -20,10 +20,13 @@ jobs:
           path: ./
           base: ${{ github.event.pull_request.base.sha }}
           head: ${{ github.event.pull_request.head.sha }}
+          extra_args: --only-verified
 
-      - name: TruffleHog (push scan)
+      - name: TruffleHog (push: scan branch)
         if: github.event_name == 'push'
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          extra_args: --since-commit HEAD~200
+          base: ""
+          head: ${{ github.ref_name }}
+          extra_args: --only-verified
