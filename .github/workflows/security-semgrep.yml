@@ -22,7 +22,6 @@ jobs:
             --config p/security-audit \
             --config p/php \
             --config p/docker \
-            --config p/ansible \
             --sarif --sarif-output=semgrep.sarif \
             .
         continue-on-error: true
