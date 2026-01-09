@@ -1,11 +1,44 @@
-name: Trivy fs scan
-uses: aquasecurity/trivy-action@master
-with:
-  scan-type: fs
-  scan-ref: .
-  format: sarif
-  output: trivy-results.sarif
-  severity: CRITICAL,HIGH,MEDIUM
-  ignore-unfixed: true
-  scanners: vuln,misconfig,secret
-continue-on-error: true
+name: Trivy FS
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.0
+        with:
+          version: v0.65.0
+          cache: true
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+
+          scanners: vuln,misconfig
+
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: true
+
+          skip-setup-trivy: true
+
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
