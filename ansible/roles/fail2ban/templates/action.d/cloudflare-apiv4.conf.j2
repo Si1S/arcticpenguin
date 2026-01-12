@@ -1,0 +1,10 @@
+[Definition]
+actionban = curl -s -X POST "https://api.cloudflare.com/client/v4/user/firewall/access_rules/rules" \
+  -H "Authorization: Bearer %(cftoken)s" \
+  -H "Content-Type: application/json" \
+  --data '{"mode":"block","configuration":{"target":"ip","value":"<ip>"},"notes":"Fail2Ban ban"}' >/dev/null
+
+actionunban = /bin/sh -c 'ip="<ip>"; id="$(curl -s -X GET -H "Authorization: Bearer %(cftoken)s" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/user/firewall/access_rules/rules?configuration.value=${ip}" | jq -r ".result[0].id")"; [ -n "${id}" ] && [ "${id}" != "null" ] && curl -s -X DELETE -H "Authorization: Bearer %(cftoken)s" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/user/firewall/access_rules/rules/${id}" >/dev/null || true'
+
+[Init]
+cftoken =

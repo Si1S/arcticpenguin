@@ -76,3 +76,16 @@ ufw_outgoing_policy: deny
 cloudflared_tunnel_token: "{{ vault_cloudflared_tunnel_token }}"
 cloudflared_hostname: arcticpenguin.org
 cloudflared_service_url: http://localhost:8080
+
+apt_packages:
+  - curl
+  - jq
+
+fail2ban_gh_version: "1.1.0"
+fail2ban_deb_url: "https://github.com/fail2ban/fail2ban/releases/download/{{ fail2ban_gh_version }}/fail2ban_{{ fail2ban_gh_version }}-1.upstream1_all.deb"
+fail2ban_deb_path: "/tmp/fail2ban_{{ fail2ban_gh_version }}.deb"
+fail2ban_jail_local_path: "/etc/fail2ban/jail.local"
+fail2ban_logpath: "/opt/webapp/logs/nginx/access.log"
+
+fail2ban_cf_action: "cloudflare-apiv4"
+fail2ban_cf_token: "{{ vault_fail2ban_cf_token }}"

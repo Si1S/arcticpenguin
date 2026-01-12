@@ -1,0 +1,31 @@
+[DEFAULT]
+allowipv6 = auto
+backend = auto
+ignoreip = 127.0.0.1/8 ::1
+action = {{ fail2ban_cf_action }}[cftoken="{{ fail2ban_cf_token }}"]
+logpath = {{ fail2ban_logpath }}
+port = http,https
+
+[sshd]
+enabled = false
+
+[web-scanner]
+enabled  = true
+filter   = web-scanner
+findtime = 5m
+maxretry = 1
+bantime  = 24h
+
+[nginx-env]
+enabled  = true
+filter   = nginx-env
+findtime = 10m
+maxretry = 1
+bantime  = 24h
+
+[nginx-4xx-probing]
+enabled  = true
+filter   = nginx-4xx-probing
+findtime = 5m
+maxretry = 20
+bantime  = 1h
