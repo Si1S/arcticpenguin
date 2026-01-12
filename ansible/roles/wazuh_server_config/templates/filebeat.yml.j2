@@ -1,0 +1,46 @@
+# Wazuh - Filebeat configuration file
+output.elasticsearch:
+  hosts: {{ filebeat_output_hosts | to_json }}
+  protocol: {{ filebeat_output_protocol | to_json }}
+  username: {{ filebeat_output_username | to_json }}
+  password: {{ filebeat_output_password | to_json }}
+  ssl.certificate_authorities:
+{% for ca in filebeat_ssl_certificate_authorities %}
+    - {{ ca }}
+{% endfor %}
+  ssl.certificate: {{ filebeat_ssl_certificate | to_json }}
+  ssl.key: {{ filebeat_ssl_key | to_json }}
+
+setup.template.json.enabled: {{ filebeat_setup_template_json_enabled | bool }}
+setup.template.json.path: {{ filebeat_setup_template_json_path | to_json }}
+setup.template.json.name: {{ filebeat_setup_template_json_name | to_json }}
+setup.ilm.overwrite: {{ filebeat_setup_ilm_overwrite | bool }}
+setup.ilm.enabled: {{ filebeat_setup_ilm_enabled | bool }}
+
+filebeat.modules:
+  - module: wazuh
+    alerts:
+      enabled: {{ filebeat_wazuh_alerts_enabled | bool }}
+    archives:
+      enabled: {{ filebeat_wazuh_archives_enabled | bool }}
+
+logging.level: {{ filebeat_logging_level | to_json }}
+logging.to_files: {{ filebeat_logging_to_files | bool }}
+logging.files:
+  path: {{ filebeat_logging_files_path }}
+  name: {{ filebeat_logging_files_name | to_json }}
+  keepfiles: {{ filebeat_logging_files_keepfiles }}
+  permissions: {{ filebeat_logging_files_permissions }}
+
+logging.metrics.enabled: {{ filebeat_logging_metrics_enabled | bool }}
+
+seccomp:
+  default_action: {{ filebeat_seccomp_default_action | to_json }}
+  syscalls:
+{% for sc in filebeat_seccomp_syscalls %}
+  - action: {{ sc.action | to_json }}
+    names:
+{% for n in sc.names %}
+    - {{ n | to_json }}
+{% endfor %}
+{% endfor %}

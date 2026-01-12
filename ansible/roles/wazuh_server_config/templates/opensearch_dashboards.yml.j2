@@ -1,0 +1,24 @@
+server.host: {{ wazuh_dash_server_host }}
+server.port: {{ wazuh_dash_server_port }}
+
+opensearch.hosts: {{ wazuh_dash_opensearch_hosts | to_json }}
+opensearch.ssl.verificationMode: {{ wazuh_dash_opensearch_ssl_verification_mode | to_json }}
+
+#opensearch.username:
+#opensearch.password:
+
+opensearch.requestHeadersAllowlist: {{ wazuh_dash_opensearch_request_headers_allowlist | to_json }}
+opensearch_security.multitenancy.enabled: {{ wazuh_dash_security_multitenancy_enabled | bool }}
+opensearch_security.readonly_mode.roles: {{ wazuh_dash_security_readonly_mode_roles | to_json }}
+
+server.ssl.enabled: {{ wazuh_dash_server_ssl_enabled | bool }}
+server.ssl.key: {{ wazuh_dash_server_ssl_key | to_json }}
+server.ssl.certificate: {{ wazuh_dash_server_ssl_certificate | to_json }}
+
+opensearch.ssl.certificateAuthorities: {{ wazuh_dash_opensearch_ssl_certificate_authorities | to_json }}
+
+uiSettings.overrides.defaultRoute: {{ wazuh_dash_ui_default_route }}
+
+opensearch_security.cookie.ttl: {{ wazuh_dash_security_cookie_ttl }}
+opensearch_security.session.ttl: {{ wazuh_dash_security_session_ttl }}
+opensearch_security.session.keepalive: {{ wazuh_dash_security_session_keepalive | bool }}

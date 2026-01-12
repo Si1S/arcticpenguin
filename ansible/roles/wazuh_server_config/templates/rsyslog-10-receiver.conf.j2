@@ -1,0 +1,14 @@
+# provides UDP syslog reception
+module(load="imudp")
+{% if rsyslog_udp_allowed_senders is defined and (rsyslog_udp_allowed_senders | length) > 0 %}
+$AllowedSender UDP, {{ rsyslog_udp_allowed_senders | join(' ') }}
+{% else %}
+# $AllowedSender UDP, 10.0.20.1 127.0.0.1
+{% endif %}
+
+ruleset(name="{{ rsyslog_udp_ruleset_name }}") {
+    action(type="omfile" file={{ rsyslog_udp_output_file | to_json }})
+}
+
+# Assign the UDP input to the ruleset above
+input(type="imudp" port={{ rsyslog_udp_port | to_json }} ruleset={{ rsyslog_udp_ruleset_name | to_json }})

@@ -1,0 +1,123 @@
+<group name="local_rules">
+
+  <!-- ====================================== -->
+  <!--      PsExec — Privilege Escalation     -->
+  <!-- ====================================== -->
+  <rule id="110011" level="10">
+    <if_sid>61615</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)^HKLM\\\\System\\\\CurrentControlSet\\\\Services\\\\PSEXESVC</field>
+    <field name="win.eventdata.eventType" type="pcre2">(?i)^SetValue$</field>
+    <field name="win.eventdata.subjectUserName" type="pcre2">(?i)^SYSTEM$</field>
+    <options>no_full_log</options>
+    <description>PsExec service PSEXESVC modifié par SYSTEM sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1543.003</id>
+      <id>T1570</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--   PsExec — Lateral Movement (Sysmon)   -->
+  <!-- ====================================== -->
+  <rule id="110012" level="10">
+    <if_sid>61615</if_sid>
+    <field name="win.eventdata.eventType" type="pcre2">^CreatePipe$</field>
+    <field name="win.eventdata.image" type="pcre2">\\\\PSEXESVC\.exe$</field>
+    <match type="pcre2">(?i)(PSEXESVC|stdin|stdout|stderr)</match>
+    <field name="win.eventdata.user" type="pcre2">(?i)NT AUTHORITY\\\\SYSTEM</field>
+    <options>no_full_log</options>
+    <description>PsExec named pipe activity on $(win.system.computer).</description>
+    <mitre>
+      <id>T1570</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--            SSH — Brute Force           -->
+  <!-- ====================================== -->
+  <rule id="100002" level="8">
+    <if_matched_sid>5716</if_matched_sid>
+    <same_source_ip />
+    <description>SSH brute-force probable depuis $(srcip) : 5 échecs en 60 secondes.</description>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--   Accès à LSASS (Dump credentials)     -->
+  <!-- ====================================== -->
+  <rule id="120001" level="12">
+    <if_sid>61615</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)\\\\lsass\.exe$</field>
+    <field name="win.eventdata.operation" type="pcre2">(?i)processaccess</field>
+    <match>0x1fffff</match>
+    <options>no_full_log</options>
+    <description>Accès suspect à LSASS détecté sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1003.001</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--   Nouvel utilisateur admin local       -->
+  <!-- ====================================== -->
+  <rule id="120002" level="10">
+    <if_sid>18107</if_sid>
+    <field name="win.eventdata.samAccountType" type="pcre2">(?i)^30000000$</field>
+    <field name="win.eventdata.targetSid" type="pcre2">-500|-501|-512|-544|-548</field>
+    <description>Création d’un nouvel utilisateur local administrateur sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1136</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--    Ajout Autorun Run/RunOnce           -->
+  <!-- ====================================== -->
+  <rule id="120003" level="12">
+    <if_sid>61615</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run</field>
+    <field name="win.eventdata.operation" type="pcre2">(?i)^SetValue$</field>
+    <description>Ajout d’une entrée de persistance (Run/RunOnce) détecté sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1547.001</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--     Ajout au groupe Remote Desktop     -->
+  <!-- ====================================== -->
+  <rule id="120004" level="10">
+    <if_sid>18108</if_sid>
+    <field name="win.eventdata.targetUserName" type="pcre2">(?i)^Remote Desktop Users$</field>
+    <description>Ajout d’un utilisateur au groupe "Remote Desktop Users" sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1021.001</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--     PowerShell obfusqué / Base64       -->
+  <!-- ====================================== -->
+  <rule id="120005" level="12">
+    <if_sid>61603</if_sid>
+    <match type="pcre2">(?i)(-enc | base64 | frombase64string | iex .+)</match>
+    <options>no_full_log</options>
+    <description>Exécution PowerShell potentiellement obfusquée ou encodée (Base64) sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1059.001</id>
+      <id>T1027</id>
+    </mitre>
+  </rule>
+
+  <!-- ====================================== -->
+  <!--       Tâche planifiée persistante       -->
+  <!-- ====================================== -->
+  <rule id="120006" level="10">
+    <if_sid>18109</if_sid>
+    <field name="win.eventdata.taskName" type="pcre2">(?i).+</field>
+    <description>Création ou modification suspecte d’une tâche planifiée persistante sur $(win.system.computer).</description>
+    <mitre>
+      <id>T1053.005</id>
+    </mitre>
+  </rule>
+
+</group>

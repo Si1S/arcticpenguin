@@ -1,0 +1,9 @@
+hosts:
+{% for h in wazuh_dash_api_hosts %}
+  - {{ h.id }}:
+      url: {{ h.url | to_json }}
+      port: {{ h.port }}
+      username: {{ h.username | to_json }}
+      password: {{ h.password | to_json }}
+      run_as: {{ h.run_as | bool }}
+{% endfor %}

@@ -1,0 +1,242 @@
+wazuh_install_nodes_indexer:
+  - name: "node-1"
+    ip: "10.0.20.5"
+
+wazuh_install_nodes_server:
+  - name: "wazuh-1"
+    ip: "10.0.20.5"
+
+wazuh_install_nodes_dashboard:
+  - name: "dashboard"
+    ip: "10.0.20.5"
+
+wazuh_indexer_network_host: "10.0.20.5"
+wazuh_indexer_node_name: "node-1"
+
+wazuh_indexer_cluster_initial_master_nodes:
+  - "node-1"
+
+wazuh_indexer_cluster_name: "wazuh-cluster"
+wazuh_indexer_node_max_local_storage_nodes: "3"
+
+wazuh_indexer_path_data: /var/lib/wazuh-indexer
+wazuh_indexer_path_logs: /var/log/wazuh-indexer
+
+wazuh_indexer_ssl_http_pemcert_filepath: /etc/wazuh-indexer/certs/indexer.pem
+wazuh_indexer_ssl_http_pemkey_filepath: /etc/wazuh-indexer/certs/indexer-key.pem
+wazuh_indexer_ssl_http_pemtrustedcas_filepath: /etc/wazuh-indexer/certs/root-ca.pem
+
+wazuh_indexer_ssl_transport_pemcert_filepath: /etc/wazuh-indexer/certs/indexer.pem
+wazuh_indexer_ssl_transport_pemkey_filepath: /etc/wazuh-indexer/certs/indexer-key.pem
+wazuh_indexer_ssl_transport_pemtrustedcas_filepath: /etc/wazuh-indexer/certs/root-ca.pem
+
+wazuh_indexer_ssl_http_enabled: true
+wazuh_indexer_ssl_transport_enforce_hostname_verification: false
+wazuh_indexer_ssl_transport_resolve_hostname: false
+
+wazuh_indexer_admin_dn:
+  - "CN=admin,OU=Wazuh,O=Wazuh,L=California,C=US"
+
+wazuh_indexer_check_snapshot_restore_write_privileges: true
+wazuh_indexer_enable_snapshot_restore_privilege: true
+
+wazuh_indexer_nodes_dn:
+  - "CN=node-1,OU=Wazuh,O=Wazuh,L=California,C=US"
+
+wazuh_indexer_restapi_roles_enabled:
+  - "all_access"
+  - "security_rest_api_access"
+
+wazuh_indexer_system_indices_enabled: true
+wazuh_indexer_system_indices_indices:
+  - ".plugins-ml-model"
+  - ".plugins-ml-task"
+  - ".opendistro-alerting-config"
+  - ".opendistro-alerting-alert*"
+  - ".opendistro-anomaly-results*"
+  - ".opendistro-anomaly-detector*"
+  - ".opendistro-anomaly-checkpoints"
+  - ".opendistro-anomaly-detection-state"
+  - ".opendistro-reports-*"
+  - ".opensearch-notifications-*"
+  - ".opensearch-notebooks"
+  - ".opensearch-observability"
+  - ".opendistro-asynchronous-search-response*"
+  - ".replication-metadata-store"
+
+wazuh_indexer_compat_override_main_response_version: true
+
+filebeat_output_hosts:
+  - "10.0.20.5:9200"
+filebeat_output_protocol: "https"
+
+filebeat_output_username: "${username}"
+filebeat_output_password: "${password}"
+
+filebeat_ssl_certificate_authorities:
+  - /etc/filebeat/certs/root-ca.pem
+filebeat_ssl_certificate: "/etc/filebeat/certs/filebeat.pem"
+filebeat_ssl_key: "/etc/filebeat/certs/filebeat-key.pem"
+
+filebeat_setup_template_json_enabled: true
+filebeat_setup_template_json_path: "/etc/filebeat/wazuh-template.json"
+filebeat_setup_template_json_name: "wazuh"
+filebeat_setup_ilm_overwrite: true
+filebeat_setup_ilm_enabled: false
+
+filebeat_wazuh_alerts_enabled: true
+filebeat_wazuh_archives_enabled: false
+
+filebeat_logging_level: "info"
+filebeat_logging_to_files: true
+filebeat_logging_files_path: /var/log/filebeat
+filebeat_logging_files_name: "filebeat"
+filebeat_logging_files_keepfiles: 7
+filebeat_logging_files_permissions: 0644
+
+filebeat_logging_metrics_enabled: false
+
+filebeat_seccomp_default_action: "allow"
+filebeat_seccomp_syscalls:
+  - action: "allow"
+    names:
+      - "rseq"
+
+# Global
+wazuh_mgr_global_jsonout_output: "yes"
+wazuh_mgr_global_alerts_log: "yes"
+wazuh_mgr_global_logall: "no"
+wazuh_mgr_global_logall_json: "no"
+wazuh_mgr_global_email_notification: "no"
+wazuh_mgr_smtp_server: "smtp.example.wazuh.com"
+wazuh_mgr_email_from: "wazuh@example.wazuh.com"
+wazuh_mgr_email_to: "recipient@example.wazuh.com"
+wazuh_mgr_email_maxperhour: "12"
+wazuh_mgr_email_log_source: "alerts.log"
+wazuh_mgr_agents_disconnection_time: "15m"
+wazuh_mgr_agents_disconnection_alert_time: "0"
+wazuh_mgr_update_check: "yes"
+
+# Alerts/logging
+wazuh_mgr_alerts_log_alert_level: "3"
+wazuh_mgr_alerts_email_alert_level: "12"
+wazuh_mgr_logging_format: "plain"
+
+# Remote (agents)
+wazuh_mgr_remote_secure_port: "1514"
+wazuh_mgr_remote_secure_protocol: "tcp"
+wazuh_mgr_remote_secure_queue_size: "131072"
+
+# Indexer output (manager -> indexer)
+wazuh_mgr_indexer_enabled: "yes"
+wazuh_mgr_indexer_hosts:
+  - "https://10.0.20.5:9200"
+wazuh_mgr_indexer_ssl_ca:
+  - "/etc/filebeat/certs/root-ca.pem"
+wazuh_mgr_indexer_ssl_cert: "/etc/filebeat/certs/filebeat.pem"
+wazuh_mgr_indexer_ssl_key: "/etc/filebeat/certs/filebeat-key.pem"
+
+# Authd (agent enrollment)
+wazuh_mgr_auth_disabled: "no"
+wazuh_mgr_auth_port: "1515"
+wazuh_mgr_auth_use_source_ip: "no"
+wazuh_mgr_auth_purge: "yes"
+wazuh_mgr_auth_use_password: "no"
+wazuh_mgr_auth_ciphers: "HIGH:!ADH:!EXP:!MD5:!RC4:!3DES:!CAMELLIA:@STRENGTH"
+wazuh_mgr_auth_ssl_verify_host: "no"
+wazuh_mgr_auth_ssl_manager_cert: "etc/sslmanager.cert"
+wazuh_mgr_auth_ssl_manager_key: "etc/sslmanager.key"
+wazuh_mgr_auth_ssl_auto_negotiate: "no"
+
+# Cluster
+wazuh_mgr_cluster_name: "wazuh"
+wazuh_mgr_cluster_node_name: "node-1"
+wazuh_mgr_cluster_node_type: "master"
+wazuh_mgr_cluster_key: "xxx"          # à mettre dans Ansible Vault idéalement
+wazuh_mgr_cluster_port: "1516"
+wazuh_mgr_cluster_bind_addr: "0.0.0.0"
+wazuh_mgr_cluster_master_nodes:
+  - "10.0.20.5"
+wazuh_mgr_cluster_hidden: "no"
+wazuh_mgr_cluster_disabled: "no"
+
+# Localfiles
+wazuh_mgr_localfiles:
+  - { log_format: "syslog", location: "/var/ossec/logs/active-responses.log" }
+  - { log_format: "syslog", location: "/var/log/dpkg.log" }
+  - { log_format: "syslog", location: "/var/log/pfsense.log" }
+
+# Remote syslog receiver (for /var/log/pfsense.log, etc.)
+wazuh_mgr_remote_syslog_port: "514"
+wazuh_mgr_remote_syslog_protocol: "udp"
+
+# Integrations / wodles
+wazuh_mgr_virustotal_api_key: "xxx"   # Ansible Vault
+wazuh_mgr_virustotal_group: "syscheck"
+wazuh_mgr_virustotal_alert_format: "json"
+
+wazuh_mgr_docker_listener_disabled: "no"
+
+wazuh_dash_server_host: "0.0.0.0"
+wazuh_dash_server_port: 443
+
+wazuh_dash_opensearch_hosts:
+  - "https://10.0.20.5:9200"
+
+wazuh_dash_opensearch_ssl_verification_mode: "certificate"
+
+wazuh_dash_opensearch_request_headers_allowlist:
+  - "securitytenant"
+  - "Authorization"
+
+wazuh_dash_security_multitenancy_enabled: false
+wazuh_dash_security_readonly_mode_roles:
+  - "kibana_read_only"
+
+wazuh_dash_server_ssl_enabled: true
+wazuh_dash_server_ssl_key: "/etc/wazuh-dashboard/certs/dashboard-key.pem"
+wazuh_dash_server_ssl_certificate: "/etc/wazuh-dashboard/certs/dashboard.pem"
+
+wazuh_dash_opensearch_ssl_certificate_authorities:
+  - "/etc/wazuh-dashboard/certs/root-ca.pem"
+
+wazuh_dash_ui_default_route: "/app/wz-home"
+
+wazuh_dash_security_cookie_ttl: 900000
+wazuh_dash_security_session_ttl: 900000
+wazuh_dash_security_session_keepalive: true
+
+wazuh_dash_api_hosts:
+  - id: "default"
+    url: "https://localhost"
+    port: 55000
+    username: "wazuh-wui"
+    password: "{{ wazuh_dash_api_password }}"
+    run_as: false
+
+wazuh_agentconf_docker_listener_interval: "1m"
+wazuh_agentconf_docker_listener_attempts: "5"
+wazuh_agentconf_docker_listener_run_on_start: "yes"
+wazuh_agentconf_docker_listener_disabled: "no"
+
+# Attention: garder les double-quotes internes pour le format docker
+wazuh_agentconf_docker_stats_command: >-
+  {% raw %}docker stats --format "{{.Container}} {{.Name}} {{.CPUPerc}} {{.MemUsage}} {{.MemPerc}} {{.NetIO}}" --no-stream{% endraw %}
+wazuh_agentconf_docker_stats_alias: "docker container stats"
+wazuh_agentconf_docker_stats_frequency: "120"
+wazuh_agentconf_docker_stats_out_format: '$(timestamp) $(hostname) docker-container-resource: $(log)'
+
+wazuh_agentconf_docker_ps_command: >-
+  {% raw %}docker ps --format "{{.Image}} {{.Names}} {{.Status}}"{% endraw %}
+wazuh_agentconf_docker_ps_alias: "docker container ps"
+wazuh_agentconf_docker_ps_frequency: "120"
+wazuh_agentconf_docker_ps_out_format: '$(timestamp) $(hostname) docker-container-health: $(log)'
+
+rsyslog_udp_port: "514"
+rsyslog_udp_ruleset_name: "rs-from-udp"
+rsyslog_udp_output_file: "/var/log/pfsense.log"
+
+# Optionnal (to enable $AllowedSender)
+# rsyslog_udp_allowed_senders:
+#   - "10.0.20.1"
+#   - "127.0.0.1"

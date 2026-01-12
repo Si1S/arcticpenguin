@@ -1,0 +1,25 @@
+---
+- name: restart wazuh-indexer
+  ansible.builtin.service:
+    name: wazuh-indexer
+    state: restarted
+
+- name: restart filebeat
+  ansible.builtin.service:
+    name: filebeat
+    state: restarted
+
+- name: restart wazuh-manager
+  ansible.builtin.service:
+    name: wazuh-manager
+    state: restarted
+
+- name: restart wazuh-dashboard
+  ansible.builtin.service:
+    name: wazuh-dashboard
+    state: restarted
+
+- name: restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted

@@ -1,0 +1,21 @@
+nodes:
+  # Wazuh indexer nodes
+  indexer:
+{% for n in wazuh_install_nodes_indexer %}
+    - name: {{ n.name | to_json }}
+      ip: {{ n.ip | to_json }}
+{% endfor %}
+
+  # Wazuh server nodes
+  server:
+{% for n in wazuh_install_nodes_server %}
+    - name: {{ n.name | to_json }}
+      ip: {{ n.ip | to_json }}
+{% endfor %}
+
+  # Wazuh dashboard nodes
+  dashboard:
+{% for n in wazuh_install_nodes_dashboard %}
+    - name: {{ n.name | to_json }}
+      ip: {{ n.ip | to_json }}
+{% endfor %}

@@ -1,0 +1,29 @@
+<agent_config>
+
+  <!-- Configuration to enable Docker listener module. -->
+  <wodle name="docker-listener">
+    <interval>{{ wazuh_agentconf_docker_listener_interval }}</interval>
+    <attempts>{{ wazuh_agentconf_docker_listener_attempts }}</attempts>
+    <run_on_start>{{ wazuh_agentconf_docker_listener_run_on_start }}</run_on_start>
+    <disabled>{{ wazuh_agentconf_docker_listener_disabled }}</disabled>
+   </wodle>
+
+  <!-- Command to extract container resources information. -->
+  <localfile>
+    <log_format>command</log_format>
+    <command>{{ wazuh_agentconf_docker_stats_command }}</command>
+    <alias>{{ wazuh_agentconf_docker_stats_alias }}</alias>
+    <frequency>{{ wazuh_agentconf_docker_stats_frequency }}</frequency>
+    <out_format>{{ wazuh_agentconf_docker_stats_out_format }}</out_format>
+  </localfile>
+
+  <!-- Command to extract container health information. -->
+  <localfile>
+    <log_format>command</log_format>
+    <command>{{ wazuh_agentconf_docker_ps_command }}</command>
+    <alias>{{ wazuh_agentconf_docker_ps_alias }}</alias>
+    <frequency>{{ wazuh_agentconf_docker_ps_frequency }}</frequency>
+    <out_format>{{ wazuh_agentconf_docker_ps_out_format }}</out_format>
+  </localfile>
+
+</agent_config>
