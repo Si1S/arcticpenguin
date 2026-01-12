@@ -1,0 +1,6 @@
+---
+- name: Deploy Wazuh configuration files
+  hosts: waz01
+  become: true
+  roles:
+    - wazuh_server_config

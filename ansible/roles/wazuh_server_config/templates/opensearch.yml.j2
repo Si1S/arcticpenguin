@@ -1,0 +1,40 @@
+network.host: {{ wazuh_indexer_network_host | to_json }}
+node.name: {{ wazuh_indexer_node_name | to_json }}
+cluster.initial_master_nodes:
+{% for n in wazuh_indexer_cluster_initial_master_nodes %}
+- {{ n | to_json }}
+{% endfor %}
+cluster.name: {{ wazuh_indexer_cluster_name | to_json }}
+node.max_local_storage_nodes: {{ wazuh_indexer_node_max_local_storage_nodes | to_json }}
+path.data: {{ wazuh_indexer_path_data }}
+path.logs: {{ wazuh_indexer_path_logs }}
+
+plugins.security.ssl.http.pemcert_filepath: {{ wazuh_indexer_ssl_http_pemcert_filepath }}
+plugins.security.ssl.http.pemkey_filepath: {{ wazuh_indexer_ssl_http_pemkey_filepath }}
+plugins.security.ssl.http.pemtrustedcas_filepath: {{ wazuh_indexer_ssl_http_pemtrustedcas_filepath }}
+plugins.security.ssl.transport.pemcert_filepath: {{ wazuh_indexer_ssl_transport_pemcert_filepath }}
+plugins.security.ssl.transport.pemkey_filepath: {{ wazuh_indexer_ssl_transport_pemkey_filepath }}
+plugins.security.ssl.transport.pemtrustedcas_filepath: {{ wazuh_indexer_ssl_transport_pemtrustedcas_filepath }}
+plugins.security.ssl.http.enabled: {{ wazuh_indexer_ssl_http_enabled | bool }}
+plugins.security.ssl.transport.enforce_hostname_verification: {{ wazuh_indexer_ssl_transport_enforce_hostname_verification | bool }}
+plugins.security.ssl.transport.resolve_hostname: {{ wazuh_indexer_ssl_transport_resolve_hostname | bool }}
+
+plugins.security.authcz.admin_dn:
+{% for dn in wazuh_indexer_admin_dn %}
+- {{ dn | to_json }}
+{% endfor %}
+plugins.security.check_snapshot_restore_write_privileges: {{ wazuh_indexer_check_snapshot_restore_write_privileges | bool }}
+plugins.security.enable_snapshot_restore_privilege: {{ wazuh_indexer_enable_snapshot_restore_privilege | bool }}
+plugins.security.nodes_dn:
+{% for dn in wazuh_indexer_nodes_dn %}
+- {{ dn | to_json }}
+{% endfor %}
+plugins.security.restapi.roles_enabled:
+{% for r in wazuh_indexer_restapi_roles_enabled %}
+- {{ r | to_json }}
+{% endfor %}
+
+plugins.security.system_indices.enabled: {{ wazuh_indexer_system_indices_enabled | bool }}
+plugins.security.system_indices.indices: {{ wazuh_indexer_system_indices_indices | to_json }}
+
+compatibility.override_main_response_version: {{ wazuh_indexer_compat_override_main_response_version | bool }}
