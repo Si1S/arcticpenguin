@@ -22,9 +22,10 @@
 
 - name: Remove temporary UFW packages rule
   community.general.ufw:
-    rule: delete
+    rule: allow
     port: "80,443"
     proto: tcp
     direction: out
+    delete: true
     comment: "TEMP PACKAGES"
   when: ufw_packages_temp.changed
