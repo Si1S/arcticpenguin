@@ -1,6 +1,8 @@
 # arcticpenguin
 
-Projet final de formation : dépôt “infra + services” combinant automatisation Ansible, services conteneurisés (webapp Symfony, monitoring, Nextcloud) et briques de sécurité (PKI, Wazuh, Cloudflare Tunnel).
+Projet final de formation qui illustre la conception et le déploiement d’une infrastructure complète, automatisée et sécurisée, combinant des outils de provisioning, de supervision et de CI/CD orientée sécurité.
+
+L’objectif est de construire un environnement cohérent “infra + services” reposant sur Ansible pour l’automatisation, Docker pour la conteneurisation (webapp Symfony, monitoring, Nextcloud), et des briques de sécurité avancées (Wazuh, Cloudflare Tunnel, PKI)
 ​
 ## ⚠️ Note de sécurité
 Ce repo contient des fichiers Ansible Vault pour un environnement de lab uniquement.
