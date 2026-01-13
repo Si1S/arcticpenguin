@@ -28,11 +28,13 @@ Ce dépôt Ansible automatise le déploiement et le durcissement d’une infra L
 - `playbooks/pki.yml` : déploie la PKI (Easy-RSA).
 - `playbooks/certificates.yml` : génère les certificats LDAPS + internes et récupère les artefacts dans `.certificates/`.
 - `playbooks/distributeca.yml` : installe `ca.crt` dans le trust store système.
+- `playbooks/nextcloud.yml` : déploie les configurations Nextcloud sur `nxc01`.
 - `playbooks/monitoring.yml` : stack monitoring sur `mon01`.
 - `playbooks/exporters.yml` : exporters (sauf `mon01` et `arc01`).
+- `playbooks/wazuh_server.yml` : déploie les configurations Wazuh sur `waz01`.
 - `playbooks/cloudflaretunnel.yml` : Cloudflare Tunnel sur `web01`.
-- `playbooks/nextcloud.yml` : prépare les configurations Nextcloud sur `nxc01`.
-- `playbooks/webapp.yml` : déploie la webapp.
+- `playbooks/webapp.yml` : déploie la webapp sur `web01`.
+- `playbooks/fail2ban.yml` : déploie fail2ban sur `web01`.
 
 ## Commandes
 
