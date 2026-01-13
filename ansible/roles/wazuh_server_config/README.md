@@ -1,6 +1,6 @@
 # Rôle - wazuh_server_config
 
-Ce rôle déploie les fichiers de configuration nécessaires au serveur Wazuh (indexer + manager + dashboard) ainsi que la réception des logs dufirewall via rsyslog.
+Ce rôle déploie les fichiers de configuration nécessaires au serveur Wazuh (indexer + manager + dashboard) ainsi que la réception des logs du firewall via rsyslog.
 
 ## Ce que fait le rôle
 
