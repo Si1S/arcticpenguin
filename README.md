@@ -16,7 +16,7 @@ Les secrets ne sont pas utilisés en production.
 
 **Monitoring (Docker Compose)** : Prometheus, Grafana, Alertmanager, Blackbox Exporter.
 
-**Nextcloud (conteneur + config)** : docker-compose Nextcloud et fichiers de configuration (Apache + exemple LDAP).
+**Nextcloud (conteneur + config)** : docker-compose Nextcloud et fichiers de configuration (Apache + exemple LDAPS).
 
 **Sécurité / PKI** : CA via Easy‑RSA, génération de certificats (LDAPS + certificats internes Nextcloud/Wazuh) et distribution de ca.crt sur les hôtes Linux.
 
