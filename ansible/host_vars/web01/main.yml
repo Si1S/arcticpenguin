@@ -89,3 +89,14 @@ fail2ban_logpath: "/opt/webapp/logs/nginx/access.log"
 
 fail2ban_cf_action: "cloudflare-apiv4"
 fail2ban_cf_token: "{{ vault_fail2ban_cf_token }}"
+
+wazuh_enable_docker_listener: true
+
+wazuh_extra_localfiles:
+  - log_format: "syslog"
+    location: "/srv/logs/nginx/access.log"
+  - log_format: "syslog"
+    location: "/srv/logs/nginx/error.log"
+
+wazuh_agent_client_buffer_queue_size: "20000"
+wazuh_agent_client_buffer_events_per_second: "800"

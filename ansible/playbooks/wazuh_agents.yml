@@ -1,0 +1,7 @@
+---
+- name: Configure Wazuh agents
+  hosts: all:!waz01
+  become: yes
+  
+  roles:
+    - wazuh_client_config

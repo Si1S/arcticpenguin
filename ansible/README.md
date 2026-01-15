@@ -1,14 +1,16 @@
-# Ansible - ArcticPenguin
+# 🧱 Ansible - ArcticPenguin
 
-Ce dépôt Ansible automatise le déploiement et le durcissement d’une infra Linux et de plusieurs services (PKI Easy-RSA, distribution de CA, monitoring, exporters, Cloudflare Tunnel, Nextcloud, application et stack web).
+Ce dépôt Ansible automatise le déploiement et le durcissement d’une infra Linux et de plusieurs services (PKI Easy-RSA, distribution de CA, monitoring, exporters, Cloudflare Tunnel, Nextcloud, applications, configuration Wazuh et stack web).
 
 ## Contenu
 
-| | |
-|---|---|
-| 🧱 Socle commun (host/users/ssh/netplan/ufw/packages) | 🔐 PKI (Easy-RSA) + distribution de CA |
-| 📈 Monitoring (Prometheus/Grafana/Alertmanager) | 📦 Exporters (node_exporter, process_exporter) |
-| 🌐 Cloudflare Tunnel | ☁️ Nextcloud (préparation conf + LDAPS) |
+|                                                        |                                                 |
+| ------------------------------------------------------ | ----------------------------------------------- |
+| 🧱 Socle commun (users, SSH, netplan, UFW, paquets,..) | 🔐 PKI (Easy-RSA, CA, distribution certificats) |
+| 📈 Monitoring (Prometheus, Grafana, Alertmanager)      | 📦 Exporters (node_exporter, process_exporter)  |
+| 🌐 Cloudflare Tunnel                                   | ☁️ Nextcloud (config, LDAPS)                    |
+| 🛡️ Wazuh Manager (configs)                             | 🔎 Wazuh Agents (configs)                       |
+| 🚫 Fail2ban (jails, filtres, actions)                  | 🌍 Stack web                                    |
 
 ## Prérequis
 
@@ -32,15 +34,31 @@ Ce dépôt Ansible automatise le déploiement et le durcissement d’une infra L
 - `playbooks/monitoring.yml` : stack monitoring sur `mon01`.
 - `playbooks/exporters.yml` : exporters (sauf `mon01` et `arc01`).
 - `playbooks/wazuh_server.yml` : déploie les configurations Wazuh sur `waz01`.
+- `playbooks/wazuh-agents.yml` : déploie la configuration de l'agent Wazuh.
 - `playbooks/cloudflaretunnel.yml` : Cloudflare Tunnel sur `web01`.
 - `playbooks/webapp.yml` : déploie la webapp sur `web01`.
 - `playbooks/fail2ban.yml` : déploie fail2ban sur `web01`.
+
+## Documentation des rôles
+
+Chaque rôle dispose de son propre README.md.
+
+Exemples :
+- 🌍 Webapp : [roles/webapp/README.md](roles/webapp/README.md)
+- 📈 Monitoring : [roles/monitoring/README.md](roles/monitoring/README.md)
+- 🚫 Fail2ban : [roles/fail2ban/README.md](roles/fail2ban/README.md)
 
 ## Commandes
 
 Installer les collections :
 ```bash
 ansible-galaxy collection install -r collections/requirements.yml
+```
+
+Dry-run (check + diff) :
+
+```bash
+ansible-playbook -i inventory.yml playbooks/common.yml -KCD
 ```
 
 Exécuter le socle commun :

@@ -1,4 +1,9 @@
 ---
+- name: Ensure wazuh-indexer user exists
+  ansible.builtin.getent:
+    database: passwd
+    key: wazuh-indexer
+
 - name: Ensure required directories exist
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -11,7 +16,10 @@
     - { path: /var/ossec/etc/rules }
     - { path: /var/ossec/etc/shared/container }
     - { path: /var/ossec/etc/decoders }
-    - { path: /etc/wazuh-indexer }
+
+    # FIX: wazuh-indexer doit pouvoir lire/traverser /etc/wazuh-indexer
+    - { path: /etc/wazuh-indexer, owner: wazuh-indexer, group: wazuh-indexer, mode: "0750" }
+
     - { path: /etc/filebeat }
     - { path: /etc/wazuh-dashboard }
     - { path: /usr/share/wazuh-dashboard/data/wazuh/config }
@@ -28,8 +36,8 @@
   ansible.builtin.template:
     src: opensearch.yml.j2
     dest: /etc/wazuh-indexer/opensearch.yml
-    owner: root
-    group: root
+    owner: wazuh-indexer
+    group: wazuh-indexer
     mode: "0640"
   notify: restart wazuh-indexer
 

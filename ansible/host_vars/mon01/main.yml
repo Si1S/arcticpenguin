@@ -119,3 +119,5 @@ alertmanager_smtp_username: "alertmanager@example.com"
 alertmanager_smtp_password: "{{ vault_alertmanager_smtp_password }}"
 alertmanager_require_tls: false
 alertmanager_send_resolved: true
+
+wazuh_enable_docker_listener: true

@@ -32,3 +32,14 @@ ufw_rules:
       - "10.0.20.1"     # pfsense servers interface
       - "10.0.30.2"     # bas01
       - "10.0.10.0/24"  # users subnet
+
+wazuh_enable_docker_listener: true
+
+wazuh_extra_localfiles:
+  - log_format: "json"
+    location: "/srv/nextcloud/data/nextcloud.log"
+  - log_format: "apache"
+    location: "/srv/nextcloud-logs/access.log"
+
+wazuh_agent_client_buffer_queue_size: "20000"
+wazuh_agent_client_buffer_events_per_second: "800"
