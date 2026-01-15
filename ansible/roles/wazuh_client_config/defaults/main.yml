@@ -1,0 +1,33 @@
+wazuh_manager_address: "10.0.20.5"
+wazuh_manager_port: 1514
+wazuh_manager_protocol: "tcp"
+wazuh_agent_group: "default"
+wazuh_agent_name: "{{ inventory_hostname }}"
+
+wazuh_agent_client_buffer_disabled: "no"
+wazuh_agent_client_buffer_queue_size: "5000"
+wazuh_agent_client_buffer_events_per_second: "300"
+
+
+# docker-listener
+wazuh_enable_docker_listener: false
+wazuh_docker_listener_interval: "10m"
+wazuh_docker_listener_attempts: 5
+wazuh_docker_listener_run_on_start: "yes"
+wazuh_docker_listener_disabled: "no"
+
+# Common local files (baseline)
+wazuh_base_localfiles:
+  - { log_format: "journald", location: "journald" }
+  - { log_format: "syslog",   location: "/var/ossec/logs/active-responses.log" }
+  - { log_format: "syslog",   location: "/var/log/dpkg.log" }
+
+  # Standard system logs (Ubuntu)
+  - { log_format: "syslog",   location: "/var/log/auth.log" }
+  - { log_format: "syslog",   location: "/var/log/syslog" }
+
+  # Auditd
+  - { log_format: "audit",    location: "/var/log/audit/audit.log" }
+
+# Host-specific additions
+wazuh_extra_localfiles: []
