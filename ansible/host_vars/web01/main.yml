@@ -1,5 +1,5 @@
-netplan_ip: 10.0.20.7
-netplan_gateway: 10.0.20.1
+netplan_ip: 10.0.40.2
+netplan_gateway: 10.0.40.1
 netplan_interface: eth0
 netplan_dns:
   - 10.0.20.2
